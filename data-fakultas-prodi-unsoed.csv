@@ -1,0 +1,67 @@
+Kategori,No,Kode,Nama Program Studi,Jenjang,Fakultas,Peringkat
+Program Sarjana,1,41201,Teknik Pertanian,S1,Pertanian,Unggul
+Program Sarjana,2,41203,Teknologi Pangan,S1,Pertanian,Unggul
+Program Sarjana,3,54201,Agribisnis,S1,Pertanian,Unggul
+Program Sarjana,4,54211,Agroteknologi,S1,Pertanian,Unggul
+Program Sarjana,5,54295,Proteksi Tanaman,S1,Pertanian,Terakreditasi Sementara
+Program Sarjana,6,46201,Biologi,S1,Biologi,Unggul
+Program Sarjana,7,46202,Mikrobiologi,S1,Biologi,Baik
+Program Sarjana,8,46204,Biologi Terapan,S1,Biologi,Terakreditasi Sementara
+Program Sarjana,9,60201,Ekonomi Pembangunan,S1,Ekonomi dan Bisnis,Unggul
+Program Sarjana,10,61201,Manajemen,S1,Ekonomi dan Bisnis,Unggul
+Program Sarjana,11,62201,Akuntansi,S1,Ekonomi dan Bisnis,Unggul
+Program Sarjana,12,87202,Pendidikan Ekonomi,S1,Ekonomi dan Bisnis,B
+Program Sarjana,13,54231,Peternakan,S1,Peternakan,Unggul
+Program Sarjana,14,74201,Hukum,S1,Hukum,Unggul
+Program Sarjana,15,63201,Administrasi Publik,S1,Ilmu Sosial dan Ilmu Politik,Unggul
+Program Sarjana,16,67201,Ilmu Politik,S1,Ilmu Sosial dan Ilmu Politik,Unggul
+Program Sarjana,17,69201,Sosiologi,S1,Ilmu Sosial dan Ilmu Politik,Unggul
+Program Sarjana,18,70201,Ilmu Komunikasi,S1,Ilmu Sosial dan Ilmu Politik,Unggul
+Program Sarjana,19,64201,Hubungan Internasional,S1,Ilmu Sosial dan Ilmu Politik,Unggul
+Program Sarjana,20,11201,Pendidikan Dokter,S1,Kedokteran,Unggul
+Program Sarjana,21,12201,Kedokteran Gigi,S1,Kedokteran,Unggul
+Program Sarjana,22,20201,Teknik Elektro,S1,Teknik,Unggul
+Program Sarjana,23,21201,Teknik Mesin,S1,Teknik,Baik
+Program Sarjana,24,22201,Teknik Sipil,S1,Teknik,Unggul
+Program Sarjana,25,26201,Teknik Industri,S1,Teknik,Baik Sekali
+Program Sarjana,26,34201,Teknik Geologi,S1,Teknik,Baik Sekali
+Program Sarjana,27,55201,Informatika,S1,Teknik,Unggul
+Program Sarjana,28,56201,Teknik Komputer,S1,Teknik,Baik
+Program Sarjana,29,23201,Arsitektur,S1,Teknik,Terakreditasi Pertama
+Program Sarjana,30,-,Teknik Pertambangan,S1,Teknik,Prodi Baru
+Program Sarjana,31,13201,Kesehatan Masyarakat,S1,Ilmu-ilmu Kesehatan,Unggul
+Program Sarjana,32,13211,Ilmu Gizi,S1,Ilmu-ilmu Kesehatan,Unggul
+Program Sarjana,33,14201,Keperawatan,S1,Ilmu-ilmu Kesehatan,Unggul
+Program Sarjana,34,48201,Farmasi,S1,Ilmu-ilmu Kesehatan,Baik Sekali
+Program Sarjana,35,85201,Pendidikan Jasmani,S1,Ilmu-ilmu Kesehatan,Unggul
+Program Sarjana,36,-,Pendidikan Kepelatihan Olahraga,S1,Ilmu-ilmu Kesehatan,Prodi Baru
+Program Sarjana,37,79201,Sastra Indonesia,S1,Ilmu Budaya,Unggul
+Program Sarjana,38,79202,Sastra Inggris,S1,Ilmu Budaya,Unggul
+Program Sarjana,39,79204,Sastra Jepang,S1,Ilmu Budaya,Unggul
+Program Sarjana,40,88201,Pendidikan Bahasa Indonesia,S1,Ilmu Budaya,Unggul
+Program Sarjana,41,88203,Pendidikan Bahasa Inggris,S1,Ilmu Budaya,Unggul
+Program Sarjana,42,88205,Pendidikan Bahasa Jepang,S1,Ilmu Budaya,Baik
+Program Sarjana,43,44201,Matematika,S1,Matematika dan Ilmu Pengetahuan Alam,Unggul
+Program Sarjana,44,45201,Fisika,S1,Matematika dan Ilmu Pengetahuan Alam,Unggul
+Program Sarjana,45,47201,Kimia,S1,Matematika dan Ilmu Pengetahuan Alam,Unggul
+Program Sarjana,46,49205,Statistika,S1,Matematika dan Ilmu Pengetahuan Alam,Baik
+Program Sarjana,47,54241,Ilmu Kelautan,S1,Perikanan dan Ilmu Kelautan,Unggul
+Program Sarjana,48,54242,Manajemen Sumberdaya Perairan,S1,Perikanan dan Ilmu Kelautan,Unggul
+Program Sarjana,49,54243,Akuakultur,S1,Perikanan dan Ilmu Kelautan,Baik Sekali
+Program Sarjana (Kelas Internasional),1,46201,Biologi Internasional,S1,Biologi,A
+Program Sarjana (Kelas Internasional),2,60201,Ekonomi Pembangunan Kelas Internasional,S1,Ekonomi dan Bisnis,Unggul
+Program Sarjana (Kelas Internasional),3,61201,Manajemen Kelas Internasional,S1,Ekonomi dan Bisnis,Unggul
+Program Sarjana (Kelas Internasional),4,62201,Akuntansi Kelas Internasional,S1,Ekonomi dan Bisnis,Unggul
+Program Sarjana (Kelas Internasional),5,74201,Hukum Kelas Internasional,S1,Hukum,Unggul
+Program Sarjana (Kelas Internasional),6,64201,Hubungan Internasional kelas Internasional,S1,Ilmu Sosial dan Ilmu Politik,Unggul
+Program Sarjana (Kelas Internasional),7,14201,Keperawatan Kelas Internasional,S1,Ilmu-ilmu Kesehatan,Unggul
+Program Diploma 3,1,54401,Agribisnis,D3,Pertanian,B
+Program Diploma 3,2,54415,Perencanaan Sumber Daya Lahan,D3,Pertanian,B
+Program Diploma 3,3,54442,Budi Daya Ikan,D3,Biologi,B
+Program Diploma 3,4,61402,Bisnis Internasional,D3,Ekonomi dan Bisnis,Unggul
+Program Diploma 3,5,62401,Akuntansi,D3,Ekonomi dan Bisnis,Unggul
+Program Diploma 3,6,63412,Administrasi Perkantoran,D3,Ekonomi dan Bisnis,Unggul
+Program Diploma 3,7,63413,Administrasi Bisnis,D3,Ekonomi dan Bisnis,Unggul
+Program Diploma 3,8,54432,Budi Daya Ternak,D3,Peternakan,Unggul
+Program Diploma 3,9,79402,Bahasa Inggris,D3,Ilmu Budaya,Unggul
+Program Diploma 3,10,79409,Bahasa Mandarin,D3,Ilmu Budaya,B
