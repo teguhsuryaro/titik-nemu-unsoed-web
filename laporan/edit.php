@@ -33,12 +33,22 @@ $stmt->close();
 
 if (!$item) {
     $_SESSION['flash_msg'] = 'Laporan tidak ditemukan.';
+    $_SESSION['flash_type'] = 'error';
     header('Location: ../dashboard.php');
     exit;
 }
 
 if ((int)$item['user_id'] !== $currentUserId) {
     $_SESSION['flash_msg'] = 'Akses ditolak. Anda hanya dapat mengedit laporan Anda sendiri.';
+    $_SESSION['flash_type'] = 'error';
+    header('Location: ../dashboard.php');
+    exit;
+}
+
+$isSelesai = ($item['status'] === 'returned' || ($item['type'] === 'lost' && $item['status'] === 'found'));
+if ($isSelesai) {
+    $_SESSION['flash_msg'] = 'Laporan yang sudah selesai diarsipkan dan tidak dapat diubah lagi.';
+    $_SESSION['flash_type'] = 'info';
     header('Location: ../dashboard.php');
     exit;
 }

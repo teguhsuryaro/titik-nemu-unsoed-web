@@ -36,6 +36,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['use
     exit;
 }
 
+// ── Pagination (10 per halaman) ──
+$stmtCount = $conn->prepare("SELECT COUNT(u.id) AS total FROM users u WHERE u.id != ? AND u.role = 'user'");
+$stmtCount->bind_param('i', $currentAdminId);
+$stmtCount->execute();
+$totalData = (int)($stmtCount->get_result()->fetch_assoc()['total'] ?? 0);
+$stmtCount->close();
+
+$limit      = 10;
+$totalPages = max(1, (int)ceil($totalData / $limit));
+$page       = min($totalPages, max(1, (int)($_GET['page'] ?? 1)));
+$offset     = ($page - 1) * $limit;
+
 // ── Ambil Daftar User ──
 $sql = "
     SELECT u.id, u.nama, u.email, u.no_hp, u.is_banned, u.created_at, f.nama_fakultas, p.nama_prodi 
@@ -44,9 +56,10 @@ $sql = "
     JOIN prodi p ON u.prodi_id = p.id
     WHERE u.id != ? AND u.role = 'user'
     ORDER BY u.created_at DESC
+    LIMIT ? OFFSET ?
 ";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param('i', $currentAdminId);
+$stmt->bind_param('iii', $currentAdminId, $limit, $offset);
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -99,7 +112,7 @@ require_once '../includes/navbar.php';
               </td>
             </tr>
           <?php else: ?>
-            <?php $no = 1; foreach ($users as $u): ?>
+            <?php $no = $offset + 1; foreach ($users as $u): ?>
               <tr>
                 <td data-label="No" class="text-muted"><?= $no++ ?></td>
                 <td data-label="Nama & Email">
@@ -147,6 +160,13 @@ require_once '../includes/navbar.php';
         </tbody>
       </table>
     </div>
+
+    <?php
+      $paginationBaseUrl   = 'users.php';
+      $paginationAriaLabel = 'Navigasi halaman manajemen pengguna';
+      $paginationId        = '';
+      require '../includes/pagination.php';
+    ?>
   </div>
 </section>
 

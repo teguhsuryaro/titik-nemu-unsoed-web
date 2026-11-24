@@ -48,6 +48,27 @@ if (!empty($whereConditions)) {
     $whereSQL = "WHERE " . implode(" AND ", $whereConditions);
 }
 
+// ── Pagination (10 per halaman) ──
+$countSql = "
+    SELECT COUNT(i.id) AS total
+    FROM items i
+    JOIN users u ON i.user_id = u.id
+    JOIN fakultas f ON i.fakultas_id = f.id
+    {$whereSQL}
+";
+$stmtCount = $conn->prepare($countSql);
+if (!empty($queryParams)) {
+    $stmtCount->bind_param($paramTypes, ...$queryParams);
+}
+$stmtCount->execute();
+$totalData = (int)($stmtCount->get_result()->fetch_assoc()['total'] ?? 0);
+$stmtCount->close();
+
+$limit      = 10;
+$totalPages = max(1, (int)ceil($totalData / $limit));
+$page       = min($totalPages, max(1, (int)($_GET['page'] ?? 1)));
+$offset     = ($page - 1) * $limit;
+
 $sql = "
     SELECT i.id, i.nama_barang, i.type, i.status, i.created_at, u.nama AS pelapor, u.is_banned, f.nama_fakultas
     FROM items i
@@ -55,11 +76,14 @@ $sql = "
     JOIN fakultas f ON i.fakultas_id = f.id
     {$whereSQL}
     ORDER BY i.created_at DESC
+    LIMIT ? OFFSET ?
 ";
 
 $stmt = $conn->prepare($sql);
 if (!empty($queryParams)) {
-    $stmt->bind_param($paramTypes, ...$queryParams);
+    $stmt->bind_param($paramTypes . "ii", ...array_merge($queryParams, [$limit, $offset]));
+} else {
+    $stmt->bind_param("ii", $limit, $offset);
 }
 $stmt->execute();
 $result = $stmt->get_result();
@@ -154,7 +178,7 @@ require_once '../includes/navbar.php';
               </td>
             </tr>
           <?php else: ?>
-            <?php $no = 1; foreach ($items as $item): ?>
+            <?php $no = $offset + 1; foreach ($items as $item): ?>
               <tr>
                 <td data-label="No" class="text-muted"><?= $no++ ?></td>
                 <td data-label="Nama Barang">
@@ -211,6 +235,13 @@ require_once '../includes/navbar.php';
         </tbody>
       </table>
     </div>
+
+    <?php
+      $paginationBaseUrl   = 'laporan.php';
+      $paginationAriaLabel = 'Navigasi halaman manajemen laporan';
+      $paginationId        = '';
+      require '../includes/pagination.php';
+    ?>
   </div>
 </section>
 

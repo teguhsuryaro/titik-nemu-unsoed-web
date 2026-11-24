@@ -27,7 +27,7 @@ $currentUserId = (int)$_SESSION['user_id'];
 $isAdmin = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin');
 
 // ── Cek Otorisasi (Pemilik atau Admin) ──
-$stmt = $conn->prepare("SELECT user_id, foto FROM items WHERE id = ? LIMIT 1");
+$stmt = $conn->prepare("SELECT user_id, type, status, foto FROM items WHERE id = ? LIMIT 1");
 $stmt->bind_param('i', $id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -36,13 +36,27 @@ $stmt->close();
 
 if (!$item) {
     $_SESSION['flash_msg'] = 'Laporan tidak ditemukan.';
+    $_SESSION['flash_type'] = 'error';
     header('Location: ../dashboard.php');
     exit;
 }
 
 if ((int)$item['user_id'] !== $currentUserId && !$isAdmin) {
     $_SESSION['flash_msg'] = 'Akses ditolak. Anda tidak berhak menghapus laporan ini.';
+    $_SESSION['flash_type'] = 'error';
     header('Location: ../dashboard.php');
+    exit;
+}
+
+$isSelesai = ($item['status'] === 'returned' || ($item['type'] === 'lost' && $item['status'] === 'found'));
+if ($isSelesai && !$isAdmin) {
+    $_SESSION['flash_msg'] = 'Laporan yang sudah selesai diarsipkan dan tidak dapat dihapus.';
+    $_SESSION['flash_type'] = 'info';
+    if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'detail.php') !== false) {
+        header('Location: ../detail.php?id=' . $id);
+    } else {
+        header('Location: ../dashboard.php');
+    }
     exit;
 }
 

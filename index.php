@@ -20,10 +20,10 @@ if (strpos($userName, ' ') !== false) {
 
 // ── Ambil & sanitasi parameter pencarian/filter ──
 $q      = trim($_GET['q'] ?? '');
-$type   = $_GET['type'] ?? 'all'; // all, lost, found
+$type   = $_GET['type'] ?? 'all'; // all, lost, found, done
 $fak_id = (int)($_GET['fakultas_id'] ?? 0);
 $page   = max(1, (int)($_GET['page'] ?? 1));
-$limit  = 12;
+$limit  = 10;
 $offset = ($page - 1) * $limit;
 
 // Ambil daftar fakultas untuk dropdown filter
@@ -36,12 +36,13 @@ if ($resFak) {
 }
 
 // ── Hitung data per tab (Global) ──
-$counts = ['all' => 0, 'lost' => 0, 'found' => 0];
+$counts = ['all' => 0, 'lost' => 0, 'found' => 0, 'done' => 0];
 $countRes = $conn->query("
     SELECT 
         COUNT(i.id) AS total,
         SUM(CASE WHEN i.type = 'lost' THEN 1 ELSE 0 END) AS total_lost,
-        SUM(CASE WHEN i.type = 'found' THEN 1 ELSE 0 END) AS total_found
+        SUM(CASE WHEN i.type = 'found' THEN 1 ELSE 0 END) AS total_found,
+        SUM(CASE WHEN (i.status = 'returned' OR (i.type = 'lost' AND i.status = 'found')) THEN 1 ELSE 0 END) AS total_done
     FROM items i
     JOIN users u ON i.user_id = u.id
     WHERE u.is_banned = 0
@@ -50,6 +51,7 @@ if ($countRes && $row = $countRes->fetch_assoc()) {
     $counts['all']   = (int)$row['total'];
     $counts['lost']  = (int)($row['total_lost'] ?? 0);
     $counts['found'] = (int)($row['total_found'] ?? 0);
+    $counts['done']  = (int)($row['total_done'] ?? 0);
 }
 
 // ── Bangun Query Dinamis ──
@@ -68,6 +70,8 @@ if ($type === 'lost' || $type === 'found') {
     $whereConditions[] = "i.type = ?";
     $queryParams[] = $type;
     $paramTypes .= "s";
+} elseif ($type === 'done') {
+    $whereConditions[] = "(i.status = 'returned' OR (i.type = 'lost' AND i.status = 'found'))";
 }
 
 if ($fak_id > 0) {
@@ -268,6 +272,15 @@ require_once 'includes/navbar.php';
           <span>Temuan</span>
           <span class="segmented__count"><?= $counts['found'] ?></span>
         </a>
+
+        <a href="index.php?<?= http_build_query(array_merge($tabParams, ['type' => 'done'])) ?>" 
+           class="segmented__item <?= $type === 'done' ? 'segmented__item--active' : '' ?>"
+           data-filter-tab="done"
+           role="tab"
+           aria-selected="<?= $type === 'done' ? 'true' : 'false' ?>">
+          <span>Selesai</span>
+          <span class="segmented__count"><?= $counts['done'] ?></span>
+        </a>
       </div>
 
       <div class="results-bar__count" id="results-count" aria-live="polite">
@@ -360,43 +373,12 @@ require_once 'includes/navbar.php';
         </div>
 
         <!-- Paginasi -->
-        <?php if ($totalPages > 1): ?>
-          <nav class="pagination" aria-label="Navigasi halaman laporan" id="pagination-container">
-            <?php if ($page > 1): ?>
-              <?php 
-                $prevParams = array_merge($_GET, ['page' => $page - 1]);
-                $prevUrl = 'index.php?' . http_build_query($prevParams); 
-              ?>
-              <a href="<?= $prevUrl ?>" class="pagination__link" aria-label="Halaman sebelumnya">
-                <svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>
-              </a>
-            <?php endif; ?>
-
-            <?php for ($p = 1; $p <= $totalPages; $p++): ?>
-              <?php if ($p === 1 || $p === $totalPages || ($p >= $page - 1 && $p <= $page + 1)): ?>
-                <?php 
-                  $pageParams = array_merge($_GET, ['page' => $p]);
-                  $pageUrl = 'index.php?' . http_build_query($pageParams); 
-                ?>
-                <a href="<?= $pageUrl ?>" 
-                   class="pagination__link <?= $p === $page ? 'pagination__link--active' : '' ?>"
-                   aria-current="<?= $p === $page ? 'page' : 'false' ?>">
-                  <?= $p ?>
-                </a>
-              <?php endif; ?>
-            <?php endfor; ?>
-
-            <?php if ($page < $totalPages): ?>
-              <?php 
-                $nextParams = array_merge($_GET, ['page' => $page + 1]);
-                $nextUrl = 'index.php?' . http_build_query($nextParams); 
-              ?>
-              <a href="<?= $nextUrl ?>" class="pagination__link" aria-label="Halaman selanjutnya">
-                <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg>
-              </a>
-            <?php endif; ?>
-          </nav>
-        <?php endif; ?>
+        <?php
+          $paginationBaseUrl   = 'index.php';
+          $paginationAriaLabel = 'Navigasi halaman laporan';
+          $paginationId        = 'pagination-container';
+          require 'includes/pagination.php';
+        ?>
 
       <?php endif; ?>
     </div>

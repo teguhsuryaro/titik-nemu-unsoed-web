@@ -14,6 +14,18 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once '../config/database.php';
 
+// Pastikan akun tidak dalam status diblokir
+$checkUserId = (int)$_SESSION['user_id'];
+$stmtBan = $conn->prepare("SELECT is_banned FROM users WHERE id = ? LIMIT 1");
+$stmtBan->bind_param('i', $checkUserId);
+$stmtBan->execute();
+$banRow = $stmtBan->get_result()->fetch_assoc();
+$stmtBan->close();
+if (!$banRow || (int)$banRow['is_banned'] === 1) {
+    header('Location: ../logout.php');
+    exit;
+}
+
 $basePath  = '../';
 $pageTitle = 'Buat Laporan — TitikNemu Unsoed';
 

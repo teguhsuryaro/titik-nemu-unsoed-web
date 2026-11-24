@@ -19,26 +19,27 @@ $userName  = $_SESSION['nama'];
 
 require_once 'config/database.php';
 
+// Pastikan akun tidak dalam status diblokir
+$stmtBan = $conn->prepare("SELECT is_banned FROM users WHERE id = ? LIMIT 1");
+$stmtBan->bind_param('i', $userId);
+$stmtBan->execute();
+$banRow = $stmtBan->get_result()->fetch_assoc();
+$stmtBan->close();
+if (!$banRow || (int)$banRow['is_banned'] === 1) {
+    header('Location: logout.php');
+    exit;
+}
+
 // Ambil sapaan depan
 $firstName = explode(' ', $userName)[0];
 
-// ── Laporan Milik User ──
-$myItemsQuery = "
-    SELECT id, type, nama_barang, status, tanggal, created_at 
-    FROM items 
-    WHERE user_id = ? 
-    ORDER BY created_at DESC
-";
-$stmt = $conn->prepare($myItemsQuery);
-$stmt->bind_param('i', $userId);
-$stmt->execute();
-$myItemsResult = $stmt->get_result();
-
-$myItems = [];
+// ── Hitung Statistik Semua Laporan User ──
 $stats = ['total' => 0, 'active_lost' => 0, 'active_found' => 0, 'done' => 0];
-
-while ($row = $myItemsResult->fetch_assoc()) {
-    $myItems[] = $row;
+$stmtStats = $conn->prepare("SELECT type, status FROM items WHERE user_id = ?");
+$stmtStats->bind_param('i', $userId);
+$stmtStats->execute();
+$resStats = $stmtStats->get_result();
+while ($row = $resStats->fetch_assoc()) {
     $stats['total']++;
     $isSelesai = ($row['status'] === 'returned' || ($row['type'] === 'lost' && $row['status'] === 'found'));
     if ($isSelesai) {
@@ -48,6 +49,31 @@ while ($row = $myItemsResult->fetch_assoc()) {
     } else {
         $stats['active_found']++;
     }
+}
+$stmtStats->close();
+
+// ── Pagination (10 per halaman) ──
+$limit      = 10;
+$totalPages = max(1, (int)ceil($stats['total'] / $limit));
+$page       = min($totalPages, max(1, (int)($_GET['page'] ?? 1)));
+$offset     = ($page - 1) * $limit;
+
+// ── Laporan Milik User (Per Halaman) ──
+$myItemsQuery = "
+    SELECT id, type, nama_barang, status, tanggal, created_at 
+    FROM items 
+    WHERE user_id = ? 
+    ORDER BY created_at DESC
+    LIMIT ? OFFSET ?
+";
+$stmt = $conn->prepare($myItemsQuery);
+$stmt->bind_param('iii', $userId, $limit, $offset);
+$stmt->execute();
+$myItemsResult = $stmt->get_result();
+
+$myItems = [];
+while ($row = $myItemsResult->fetch_assoc()) {
+    $myItems[] = $row;
 }
 $stmt->close();
 
@@ -71,11 +97,16 @@ require_once 'includes/navbar.php';
 
     <!-- Flash message -->
     <?php if (isset($_SESSION['flash_msg'])): ?>
-      <div class="alert alert--success" role="status">
-        <svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg>
+      <?php
+        $flashType = $_SESSION['flash_type'] ?? 'success';
+        $alertClass = $flashType === 'error' ? 'alert--error' : ($flashType === 'info' ? 'alert--info' : 'alert--success');
+        $alertIcon  = $flashType === 'error' ? 'i-alert' : ($flashType === 'info' ? 'i-info' : 'i-check-circle');
+      ?>
+      <div class="alert <?= $alertClass ?>" role="status">
+        <svg class="icon" aria-hidden="true"><use href="#<?= $alertIcon ?>"/></svg>
         <span><?= htmlspecialchars($_SESSION['flash_msg']) ?></span>
       </div>
-      <?php unset($_SESSION['flash_msg']); ?>
+      <?php unset($_SESSION['flash_msg'], $_SESSION['flash_type']); ?>
     <?php endif; ?>
 
     <!-- Ringkasan Statistik User -->
@@ -166,18 +197,23 @@ require_once 'includes/navbar.php';
                           <span>Selesai</span>
                         </button>
                       </form>
+
+                      <a href="laporan/edit.php?id=<?= $item['id'] ?>" class="btn btn--secondary btn--sm" title="Edit Laporan" aria-label="Edit laporan <?= htmlspecialchars($item['nama_barang']) ?>">
+                        <svg class="icon icon--sm" aria-hidden="true"><use href="#i-pencil"/></svg>
+                      </a>
+
+                      <form action="laporan/hapus.php" method="POST" onsubmit="return confirm('Yakin ingin menghapus laporan ini secara permanen?');">
+                        <input type="hidden" name="id" value="<?= $item['id'] ?>">
+                        <button type="submit" class="btn btn--danger-outline btn--sm" title="Hapus Laporan" aria-label="Hapus laporan <?= htmlspecialchars($item['nama_barang']) ?>">
+                          <svg class="icon icon--sm" aria-hidden="true"><use href="#i-trash"/></svg>
+                        </button>
+                      </form>
+                    <?php else: ?>
+                      <span class="text-xs text-muted inline-flex items-center gap-1" title="Laporan yang sudah selesai diarsipkan dan tidak dapat diubah atau dihapus">
+                        <svg class="icon icon--sm" aria-hidden="true"><use href="#i-check-circle"/></svg>
+                        <span>Diarsipkan</span>
+                      </span>
                     <?php endif; ?>
-
-                    <a href="laporan/edit.php?id=<?= $item['id'] ?>" class="btn btn--secondary btn--sm" title="Edit Laporan" aria-label="Edit laporan <?= htmlspecialchars($item['nama_barang']) ?>">
-                      <svg class="icon icon--sm" aria-hidden="true"><use href="#i-pencil"/></svg>
-                    </a>
-
-                    <form action="laporan/hapus.php" method="POST" onsubmit="return confirm('Yakin ingin menghapus laporan ini secara permanen?');">
-                      <input type="hidden" name="id" value="<?= $item['id'] ?>">
-                      <button type="submit" class="btn btn--danger-outline btn--sm" title="Hapus Laporan" aria-label="Hapus laporan <?= htmlspecialchars($item['nama_barang']) ?>">
-                        <svg class="icon icon--sm" aria-hidden="true"><use href="#i-trash"/></svg>
-                      </button>
-                    </form>
                   </div>
                 </td>
               </tr>
@@ -185,6 +221,13 @@ require_once 'includes/navbar.php';
           </tbody>
         </table>
       </div>
+
+      <?php
+        $paginationBaseUrl   = 'dashboard.php';
+        $paginationAriaLabel = 'Navigasi halaman laporan saya';
+        $paginationId        = '';
+        require 'includes/pagination.php';
+      ?>
     <?php endif; ?>
 
   </div>

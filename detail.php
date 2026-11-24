@@ -97,11 +97,16 @@ $iconId = $catIcons[$item['kategori'] ?? ''] ?? 'i-box';
     
     <!-- Flash message update status -->
     <?php if (isset($_SESSION['flash_msg'])): ?>
-      <div class="alert alert--success" role="status">
-        <svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg>
+      <?php
+        $flashType = $_SESSION['flash_type'] ?? 'success';
+        $alertClass = $flashType === 'error' ? 'alert--error' : ($flashType === 'info' ? 'alert--info' : 'alert--success');
+        $alertIcon  = $flashType === 'error' ? 'i-alert' : ($flashType === 'info' ? 'i-info' : 'i-check-circle');
+      ?>
+      <div class="alert <?= $alertClass ?>" role="status">
+        <svg class="icon" aria-hidden="true"><use href="#<?= $alertIcon ?>"/></svg>
         <span><?= htmlspecialchars($_SESSION['flash_msg']) ?></span>
       </div>
-      <?php unset($_SESSION['flash_msg']); ?>
+      <?php unset($_SESSION['flash_msg'], $_SESSION['flash_type']); ?>
     <?php endif; ?>
 
     <!-- Breadcrumb back link -->
@@ -211,22 +216,31 @@ $iconId = $catIcons[$item['kategori'] ?? ''] ?? 'i-box';
               </form>
             <?php endif; ?>
 
-            <div class="flex gap-2 btn--block">
-              <?php if ($isOwner): ?>
-                <a href="laporan/edit.php?id=<?= $item['id'] ?>" class="btn btn--secondary flex-1">
-                  <svg class="icon icon--sm" aria-hidden="true"><use href="#i-pencil"/></svg>
-                  <span>Edit Laporan</span>
-                </a>
-              <?php endif; ?>
+            <?php if (($isOwner && !$isReturned) || $isAdmin): ?>
+              <div class="flex gap-2 btn--block">
+                <?php if ($isOwner && !$isReturned): ?>
+                  <a href="laporan/edit.php?id=<?= $item['id'] ?>" class="btn btn--secondary flex-1">
+                    <svg class="icon icon--sm" aria-hidden="true"><use href="#i-pencil"/></svg>
+                    <span>Edit Laporan</span>
+                  </a>
+                <?php endif; ?>
 
-              <form action="laporan/hapus.php" method="POST" class="flex-1" onsubmit="return confirm('Yakin ingin menghapus laporan ini secara permanen? Tindakan ini tidak dapat dibatalkan.');">
-                <input type="hidden" name="id" value="<?= $item['id'] ?>">
-                <button type="submit" class="btn btn--danger-outline btn--block">
-                  <svg class="icon icon--sm" aria-hidden="true"><use href="#i-trash"/></svg>
-                  <span>Hapus</span>
-                </button>
-              </form>
-            </div>
+                <form action="laporan/hapus.php" method="POST" class="flex-1" onsubmit="return confirm('Yakin ingin menghapus laporan ini secara permanen? Tindakan ini tidak dapat dibatalkan.');">
+                  <input type="hidden" name="id" value="<?= $item['id'] ?>">
+                  <button type="submit" class="btn btn--danger-outline btn--block">
+                    <svg class="icon icon--sm" aria-hidden="true"><use href="#i-trash"/></svg>
+                    <span>Hapus</span>
+                  </button>
+                </form>
+              </div>
+            <?php endif; ?>
+
+            <?php if ($isOwner && $isReturned && !$isAdmin): ?>
+              <div class="alert alert--info text-center" role="status">
+                <svg class="icon" aria-hidden="true"><use href="#i-info"/></svg>
+                <span>Laporan ini telah selesai dan diarsipkan (tidak dapat diubah atau dihapus).</span>
+              </div>
+            <?php endif; ?>
 
           <?php elseif (!$isReturned): ?>
             
