@@ -227,41 +227,6 @@ require_once 'includes/navbar.php';
       </button>
     </form>
 
-    <!-- Segmented Tabs Filter Jenis -->
-    <?php
-      $tabParams = [];
-      if ($q !== '') $tabParams['q'] = $q;
-      if ($fak_id > 0) $tabParams['fakultas_id'] = $fak_id;
-    ?>
-    <div class="segmented" role="tablist" aria-label="Filter jenis laporan">
-      <a href="index.php?<?= http_build_query(array_merge($tabParams, ['type' => 'all'])) ?>" 
-         class="segmented__item <?= $type === 'all' ? 'segmented__item--active' : '' ?>"
-         data-filter-tab="all"
-         role="tab"
-         aria-selected="<?= $type === 'all' ? 'true' : 'false' ?>">
-        <span>Semua Laporan</span>
-        <span class="segmented__count"><?= $counts['all'] ?></span>
-      </a>
-
-      <a href="index.php?<?= http_build_query(array_merge($tabParams, ['type' => 'lost'])) ?>" 
-         class="segmented__item <?= $type === 'lost' ? 'segmented__item--active' : '' ?>"
-         data-filter-tab="lost"
-         role="tab"
-         aria-selected="<?= $type === 'lost' ? 'true' : 'false' ?>">
-        <span>Barang Hilang</span>
-        <span class="segmented__count"><?= $counts['lost'] ?></span>
-      </a>
-
-      <a href="index.php?<?= http_build_query(array_merge($tabParams, ['type' => 'found'])) ?>" 
-         class="segmented__item <?= $type === 'found' ? 'segmented__item--active' : '' ?>"
-         data-filter-tab="found"
-         role="tab"
-         aria-selected="<?= $type === 'found' ? 'true' : 'false' ?>">
-        <span>Barang Ditemukan</span>
-        <span class="segmented__count"><?= $counts['found'] ?></span>
-      </a>
-    </div>
-
   </div>
 </div>
 
@@ -269,8 +234,42 @@ require_once 'includes/navbar.php';
 <section class="section">
   <div class="container">
 
-    <!-- Header Status Hasil -->
+    <!-- Header Status Hasil & Filter Jenis -->
+    <?php
+      $tabParams = [];
+      if ($q !== '') $tabParams['q'] = $q;
+      if ($fak_id > 0) $tabParams['fakultas_id'] = $fak_id;
+    ?>
     <div class="results-bar">
+      <div class="segmented" role="tablist" aria-label="Filter jenis laporan">
+        <a href="index.php?<?= http_build_query(array_merge($tabParams, ['type' => 'all'])) ?>" 
+           class="segmented__item <?= $type === 'all' ? 'segmented__item--active' : '' ?>"
+           data-filter-tab="all"
+           role="tab"
+           aria-selected="<?= $type === 'all' ? 'true' : 'false' ?>">
+          <span>Semua</span>
+          <span class="segmented__count"><?= $counts['all'] ?></span>
+        </a>
+
+        <a href="index.php?<?= http_build_query(array_merge($tabParams, ['type' => 'lost'])) ?>" 
+           class="segmented__item <?= $type === 'lost' ? 'segmented__item--active' : '' ?>"
+           data-filter-tab="lost"
+           role="tab"
+           aria-selected="<?= $type === 'lost' ? 'true' : 'false' ?>">
+          <span>Hilang</span>
+          <span class="segmented__count"><?= $counts['lost'] ?></span>
+        </a>
+
+        <a href="index.php?<?= http_build_query(array_merge($tabParams, ['type' => 'found'])) ?>" 
+           class="segmented__item <?= $type === 'found' ? 'segmented__item--active' : '' ?>"
+           data-filter-tab="found"
+           role="tab"
+           aria-selected="<?= $type === 'found' ? 'true' : 'false' ?>">
+          <span>Ditemukan</span>
+          <span class="segmented__count"><?= $counts['found'] ?></span>
+        </a>
+      </div>
+
       <div class="results-bar__count" id="results-count" aria-live="polite">
         <?php if ($isFiltering): ?>
           Ditemukan <strong><?= $totalData ?></strong> laporan &bull; 
