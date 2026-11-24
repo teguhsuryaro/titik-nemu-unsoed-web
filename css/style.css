@@ -1788,6 +1788,7 @@ small {
 .text-success { color: var(--brand-green); }
 
 .flex { display: flex; }
+.flex-1 { flex: 1; }
 .flex-col { display: flex; flex-direction: column; }
 .items-center { align-items: center; }
 .justify-between { justify-content: space-between; }

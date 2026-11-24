@@ -1,6 +1,7 @@
 <?php
 /**
  * detail.php — Halaman Detail Barang
+ * Refactored: Pure Semantic HTML5, No <style> or Inline Styles, Sprite Icons
  */
 
 session_start();
@@ -44,11 +45,15 @@ require_once 'includes/navbar.php';
 if (!$item) {
     ?>
     <section class="section">
-      <div class="container text-center" style="padding: 4rem 0;">
-        <h1 style="font-size: 4rem; color: var(--border); margin-bottom: 1rem;">404</h1>
-        <h2 style="font-size: var(--font-size-xl); margin-bottom: 1rem;">Barang tidak ditemukan</h2>
-        <p class="text-muted mb-3">Laporan yang Anda cari tidak ada, sudah dihapus, atau disembunyikan oleh sistem.</p>
-        <a href="index.php" class="btn btn--primary">Cari Barang Lain</a>
+      <div class="container text-center">
+        <div class="empty-state">
+          <div class="empty-state__icon">
+            <svg class="icon icon--xl" aria-hidden="true"><use href="#i-alert"/></svg>
+          </div>
+          <h1 class="empty-state__title">Barang tidak ditemukan</h1>
+          <p class="empty-state__desc">Laporan yang Anda cari tidak ada, sudah dihapus, atau dinonaktifkan oleh sistem.</p>
+          <a href="index.php" class="btn btn--primary">Cari Barang Lain</a>
+        </div>
       </div>
     </section>
     <?php
@@ -73,253 +78,176 @@ if (strpos($waNumber, '08') === 0) {
 $jenis = $item['type'] === 'lost' ? 'kehilangan' : 'menemukan';
 $waMessage = rawurlencode("Halo {$item['pelapor_nama']}, saya melihat laporan di TitikNemu Unsoed bahwa Anda {$jenis} barang: *{$item['nama_barang']}*. Apakah kita bisa berdiskusi lebih lanjut?");
 $waLink = "https://wa.me/{$waNumber}?text={$waMessage}";
+
+// Mapping ikon kategori
+$catIcons = [
+    'Kunci'              => 'i-key',
+    'Dompet/Tas'         => 'i-wallet',
+    'Elektronik'         => 'i-phone',
+    'Dokumen'            => 'i-file',
+    'Pakaian/Aksesoris'  => 'i-glasses',
+    'Alat Tulis'         => 'i-pencil',
+    'Lainnya'            => 'i-box'
+];
+$iconId = $catIcons[$item['kategori'] ?? ''] ?? 'i-box';
 ?>
 
-<style>
-.detail-layout {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  max-width: 900px;
-  margin: 0 auto;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
-}
-.detail-photo {
-  width: 100%;
-  background: var(--page);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-bottom: 1px solid var(--border);
-}
-.detail-photo img {
-  width: 100%;
-  max-height: 500px;
-  object-fit: cover;
-}
-.detail-content {
-  padding: 1.5rem;
-}
-.detail-header {
-  margin-bottom: 1.5rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid var(--border);
-}
-.detail-title {
-  font-size: var(--font-size-2xl);
-  font-weight: 700;
-  color: var(--ink);
-  margin-bottom: .5rem;
-  line-height: 1.3;
-}
-.detail-meta-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-.meta-box {
-  display: flex;
-  flex-direction: column;
-  gap: .25rem;
-}
-.meta-box__label {
-  font-size: var(--font-size-xs);
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 600;
-}
-.meta-box__val {
-  font-size: var(--font-size-base);
-  font-weight: 500;
-  color: var(--ink);
-}
-.detail-desc {
-  margin-bottom: 2rem;
-}
-.detail-desc p {
-  white-space: pre-wrap;
-  color: var(--ink);
-  line-height: 1.7;
-}
-.detail-reporter {
-  background: var(--page);
-  border-radius: var(--radius-sm);
-  padding: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-.detail-reporter__avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #E2E7EE;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  color: var(--muted);
-  flex-shrink: 0;
-}
-@media (min-width: 640px) {
-  .detail-layout {
-    flex-direction: row;
-    align-items: flex-start;
-  }
-  .detail-photo {
-    flex: 1;
-    border-bottom: none;
-    border-right: 1px solid var(--border);
-    position: sticky;
-    top: 64px; /* offset navbar */
-  }
-  .detail-content {
-    flex: 1;
-    padding: 2rem;
-  }
-  .detail-meta-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-</style>
-
-<section class="section">
+<section class="section detail-page">
   <div class="container">
     
     <!-- Flash message update status -->
     <?php if (isset($_SESSION['flash_msg'])): ?>
-      <div class="alert alert--success mb-3" style="max-width: 900px; margin-left: auto; margin-right: auto;">
-        <?= htmlspecialchars($_SESSION['flash_msg']) ?>
+      <div class="alert alert--success" role="status">
+        <svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg>
+        <span><?= htmlspecialchars($_SESSION['flash_msg']) ?></span>
       </div>
       <?php unset($_SESSION['flash_msg']); ?>
     <?php endif; ?>
 
-    <!-- Breadcrumb back -->
-    <div style="max-width: 900px; margin: 0 auto 1rem;">
-      <a href="index.php" class="text-muted" style="font-size: var(--font-size-sm); display: inline-flex; align-items: center; gap: .25rem; font-weight: 500;">
-        &larr; Kembali ke Daftar Barang
+    <!-- Breadcrumb back link -->
+    <div class="mb-3">
+      <a href="index.php" class="btn btn--secondary btn--sm">
+        <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-left"/></svg>
+        <span>Kembali ke Beranda</span>
       </a>
     </div>
 
-    <div class="detail-layout">
-      <!-- Sisi Kiri: Foto -->
-      <div class="detail-photo">
+    <div class="detail-grid">
+      <!-- Sisi Kiri: Foto / Placeholder Media -->
+      <div class="detail-gallery">
         <?php if (!empty($item['foto']) && file_exists('uploads/' . $item['foto'])): ?>
-          <img src="uploads/<?= htmlspecialchars($item['foto']) ?>" alt="Foto <?= htmlspecialchars($item['nama_barang']) ?>">
+          <img src="uploads/<?= htmlspecialchars($item['foto']) ?>" 
+               alt="Foto barang <?= htmlspecialchars($item['nama_barang']) ?>"
+               loading="lazy">
         <?php else: ?>
-          <div style="padding: 4rem; color: var(--border);">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+          <div class="detail-gallery__placeholder">
+            <svg class="icon icon--xl" aria-hidden="true"><use href="#<?= $iconId ?>"/></svg>
+            <span class="text-sm text-muted">Tidak ada foto barang</span>
           </div>
         <?php endif; ?>
       </div>
 
-      <!-- Sisi Kanan: Informasi -->
-      <div class="detail-content">
+      <!-- Sisi Kanan: Informasi Lengkap -->
+      <div class="detail-info">
         
         <div class="detail-header">
-          <div style="margin-bottom: .75rem;">
+          <div>
             <?php if ($isReturned): ?>
-              <span class="badge badge--returned">Selesai</span>
+              <span class="badge badge--done">
+                <svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>
+                <span>Selesai / Dikembalikan</span>
+              </span>
             <?php elseif ($item['type'] === 'lost'): ?>
-              <span class="badge badge--lost">Barang Hilang</span>
+              <span class="badge badge--lost">
+                <svg class="icon icon--sm" aria-hidden="true"><use href="#i-search"/></svg>
+                <span>Barang Hilang</span>
+              </span>
             <?php else: ?>
-              <span class="badge badge--found">Barang Ditemukan</span>
+              <span class="badge badge--found">
+                <svg class="icon icon--sm" aria-hidden="true"><use href="#i-gift"/></svg>
+                <span>Barang Ditemukan</span>
+              </span>
             <?php endif; ?>
           </div>
+
           <h1 class="detail-title"><?= htmlspecialchars($item['nama_barang']) ?></h1>
         </div>
 
-        <div class="detail-meta-grid">
-          <div class="meta-box">
-            <span class="meta-box__label">Kategori</span>
-            <span class="meta-box__val"><?= htmlspecialchars($item['kategori']) ?></span>
+        <!-- Metadata Grid -->
+        <div class="detail-meta-box">
+          <div class="meta-field">
+            <span class="meta-field__label">Kategori</span>
+            <span class="meta-field__val"><?= htmlspecialchars($item['kategori']) ?></span>
           </div>
-          <div class="meta-box">
-            <span class="meta-box__label">Fakultas</span>
-            <span class="meta-box__val"><?= htmlspecialchars($item['nama_fakultas']) ?></span>
+          <div class="meta-field">
+            <span class="meta-field__label">Fakultas</span>
+            <span class="meta-field__val"><?= htmlspecialchars($item['nama_fakultas']) ?></span>
           </div>
-          <div class="meta-box">
-            <span class="meta-box__label"><?= $item['type'] === 'lost' ? 'Tanggal Kehilangan' : 'Tanggal Ditemukan' ?></span>
-            <span class="meta-box__val"><?= date('d F Y', strtotime($item['tanggal'])) ?></span>
+          <div class="meta-field">
+            <span class="meta-field__label"><?= $item['type'] === 'lost' ? 'Tanggal Kehilangan' : 'Tanggal Ditemukan' ?></span>
+            <span class="meta-field__val"><?= date('d F Y', strtotime($item['tanggal'])) ?></span>
           </div>
-          <div class="meta-box">
-            <span class="meta-box__label">Lokasi Detail</span>
-            <span class="meta-box__val"><?= !empty($item['lokasi']) ? htmlspecialchars($item['lokasi']) : '-' ?></span>
+          <div class="meta-field">
+            <span class="meta-field__label">Lokasi Detail</span>
+            <span class="meta-field__val"><?= !empty($item['lokasi']) ? htmlspecialchars($item['lokasi']) : '-' ?></span>
           </div>
         </div>
 
+        <!-- Deskripsi Barang -->
         <div class="detail-desc">
-          <div class="meta-box__label" style="margin-bottom: .5rem;">Deskripsi / Ciri-ciri Tambahan</div>
-          <p><?= !empty($item['deskripsi']) ? htmlspecialchars($item['deskripsi']) : '<em class="text-muted">Tidak ada deskripsi tambahan.</em>' ?></p>
+          <div class="detail-desc__title">Deskripsi &amp; Ciri-ciri Tambahan</div>
+          <div class="detail-desc__text"><?= !empty($item['deskripsi']) ? htmlspecialchars($item['deskripsi']) : '<span class="text-muted">Tidak ada deskripsi tambahan.</span>' ?></div>
         </div>
 
         <!-- Info Pelapor -->
-        <div class="detail-reporter">
-          <div class="detail-reporter__avatar">
+        <div class="reporter-card">
+          <div class="reporter-avatar" aria-hidden="true">
             <?= strtoupper(mb_substr($item['pelapor_nama'], 0, 1)) ?>
           </div>
-          <div>
-            <div style="font-weight: 600; color: var(--ink); line-height: 1.2;">
+          <div class="reporter-info">
+            <div class="reporter-name">
               <?= htmlspecialchars($item['pelapor_nama']) ?>
-              <?php if ($isOwner): ?> <span class="badge badge--returned" style="margin-left: 4px; padding: 2px 6px;">Anda</span> <?php endif; ?>
+              <?php if ($isOwner): ?>
+                <span class="badge badge--done">Anda</span>
+              <?php endif; ?>
             </div>
-            <div style="font-size: var(--font-size-xs); color: var(--muted);">
+            <div class="reporter-sub">
               <?= htmlspecialchars($item['jenjang'] . ' - ' . $item['nama_prodi']) ?>
             </div>
           </div>
         </div>
 
-        <!-- Tombol Aksi -->
-        <?php if ($isOwner || $isAdmin): ?>
-          
-          <div style="display: flex; flex-direction: column; gap: .75rem;">
-            <!-- Jika milik user (atau admin yang ingin hapus) -->
+        <!-- Tombol Aksi (Tergantung Role / Kepemilikan) -->
+        <div class="detail-actions">
+          <?php if ($isOwner || $isAdmin): ?>
+            
             <?php if ($isOwner && !$isReturned): ?>
-              <form action="laporan/update_status.php" method="POST" style="width:100%;" onsubmit="return confirm('Tandai laporan ini sebagai selesai/dikembalikan?');">
+              <form action="laporan/update_status.php" method="POST" class="btn--block" onsubmit="return confirm('Tandai laporan ini sebagai selesai/dikembalikan?');">
                 <input type="hidden" name="id" value="<?= $item['id'] ?>">
-                <button type="submit" class="btn btn--primary btn--block btn--lg">
-                  Tandai Sebagai Selesai
+                <button type="submit" class="btn btn--primary btn--lg btn--block">
+                  <svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>
+                  <span>Tandai Sebagai Selesai</span>
                 </button>
               </form>
             <?php endif; ?>
 
-            <div style="display: flex; gap: .5rem;">
+            <div class="flex gap-2 btn--block">
               <?php if ($isOwner): ?>
-                <a href="laporan/edit.php?id=<?= $item['id'] ?>" class="btn btn--outline" style="flex: 1;">Edit</a>
+                <a href="laporan/edit.php?id=<?= $item['id'] ?>" class="btn btn--secondary flex-1">
+                  <svg class="icon icon--sm" aria-hidden="true"><use href="#i-pencil"/></svg>
+                  <span>Edit Laporan</span>
+                </a>
               <?php endif; ?>
 
-              <form action="laporan/hapus.php" method="POST" style="flex: 1;" onsubmit="return confirm('Yakin ingin menghapus laporan ini secara permanen?');">
+              <form action="laporan/hapus.php" method="POST" class="flex-1" onsubmit="return confirm('Yakin ingin menghapus laporan ini secara permanen? Tindakan ini tidak dapat dibatalkan.');">
                 <input type="hidden" name="id" value="<?= $item['id'] ?>">
-                <button type="submit" class="btn btn--outline" style="width: 100%; color: var(--danger); border-color: var(--danger);">Hapus</button>
+                <button type="submit" class="btn btn--danger-outline btn--block">
+                  <svg class="icon icon--sm" aria-hidden="true"><use href="#i-trash"/></svg>
+                  <span>Hapus</span>
+                </button>
               </form>
             </div>
-          </div>
 
-        <?php elseif (!$isReturned): ?>
-          
-          <!-- Tombol WhatsApp untuk pengunjung / user lain -->
-          <a href="<?= $waLink ?>" target="_blank" rel="noopener noreferrer" class="btn btn--green btn--block btn--lg">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-            Hubungi via WhatsApp
-          </a>
-          <p class="text-center text-muted mt-1" style="font-size: var(--font-size-xs);">
-            Anda akan diarahkan ke aplikasi WhatsApp untuk menghubungi pelapor.
-          </p>
+          <?php elseif (!$isReturned): ?>
+            
+            <!-- Tombol WhatsApp untuk Pengunjung / Pengguna Lain -->
+            <a href="<?= $waLink ?>" target="_blank" rel="noopener noreferrer" class="btn btn--found btn--lg btn--block">
+              <svg class="icon" aria-hidden="true"><use href="#i-message"/></svg>
+              <span>Hubungi via WhatsApp</span>
+            </a>
+            <p class="text-xs text-muted text-center mt-1">
+              Anda akan diarahkan ke obrolan WhatsApp untuk berdiskusi dengan pelapor.
+            </p>
 
-        <?php else: ?>
-          
-          <div class="alert alert--info text-center" style="margin-bottom: 0;">
-            Barang ini sudah dikembalikan ke pemiliknya.
-          </div>
+          <?php else: ?>
+            
+            <div class="alert alert--info text-center" role="status">
+              <svg class="icon" aria-hidden="true"><use href="#i-info"/></svg>
+              <span>Barang ini sudah dikembalikan kepada pemiliknya.</span>
+            </div>
 
-        <?php endif; ?>
+          <?php endif; ?>
+        </div>
 
       </div>
     </div>
