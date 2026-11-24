@@ -1,6 +1,7 @@
 <?php
 /**
  * admin/users.php — Manajemen Pengguna
+ * Refactored: Pure Semantic HTML5, No <style> or Inline Styles, Shared Admin Nav
  */
 
 session_start();
@@ -59,74 +60,84 @@ require_once '../includes/header.php';
 require_once '../includes/navbar.php';
 ?>
 
-<style>
-.table--admin tbody tr:nth-child(even) { background-color: var(--page); }
-.table--admin tbody tr:hover { background-color: #f1f5f9; }
-</style>
-
 <section class="section">
   <div class="container">
     <div class="page-header">
-      <a href="dashboard.php" class="btn btn--outline btn--sm mb-2" style="display: inline-flex;">&larr; Kembali ke Dashboard Admin</a>
       <h1 class="page-header__title">Manajemen Pengguna</h1>
       <p class="page-header__sub">Lihat daftar mahasiswa yang terdaftar dan atur status akses mereka.</p>
     </div>
 
+    <!-- Tab Navigasi Admin -->
+    <?php require_once '../includes/admin_nav.php'; ?>
+
     <?php if (isset($_SESSION['flash_msg'])): ?>
-      <div class="alert alert--success mb-3"><?= htmlspecialchars($_SESSION['flash_msg']) ?></div>
+      <div class="alert alert--success mb-3" role="status">
+        <svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg>
+        <span><?= htmlspecialchars($_SESSION['flash_msg']) ?></span>
+      </div>
       <?php unset($_SESSION['flash_msg']); ?>
     <?php endif; ?>
 
-    <div class="table-responsive" style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);">
-      <table class="table table--admin">
+    <div class="table-wrap">
+      <table class="table table--stack">
         <thead>
           <tr>
             <th>No</th>
-            <th>Nama & Email</th>
-            <th>Fakultas & Prodi</th>
+            <th>Nama &amp; Email</th>
+            <th>Fakultas &amp; Prodi</th>
             <th>No. HP</th>
             <th>Status</th>
             <th>Tanggal Daftar</th>
-            <th style="text-align: right;">Aksi</th>
+            <th class="text-right">Aksi</th>
           </tr>
         </thead>
         <tbody>
           <?php if (empty($users)): ?>
-            <tr><td colspan="7" class="text-center text-muted" style="padding: 2rem;">Belum ada pengguna terdaftar.</td></tr>
+            <tr>
+              <td colspan="7" class="text-center text-muted py-6">
+                Belum ada pengguna terdaftar.
+              </td>
+            </tr>
           <?php else: ?>
             <?php $no = 1; foreach ($users as $u): ?>
               <tr>
-                <td class="text-muted"><?= $no++ ?></td>
-                <td>
-                  <div style="font-weight: 600; color: var(--ink);"><?= htmlspecialchars($u['nama']) ?></div>
-                  <div style="font-size: var(--font-size-xs); color: var(--muted);"><?= htmlspecialchars($u['email']) ?></div>
+                <td data-label="No" class="text-muted"><?= $no++ ?></td>
+                <td data-label="Nama & Email">
+                  <div class="font-semibold text-ink"><?= htmlspecialchars($u['nama']) ?></div>
+                  <div class="text-xs text-muted"><?= htmlspecialchars($u['email']) ?></div>
                 </td>
-                <td>
-                  <div style="font-weight: 500;"><?= htmlspecialchars($u['nama_fakultas']) ?></div>
-                  <div style="font-size: var(--font-size-xs); color: var(--muted);"><?= htmlspecialchars($u['nama_prodi']) ?></div>
+                <td data-label="Fakultas & Prodi">
+                  <div class="font-semibold"><?= htmlspecialchars($u['nama_fakultas']) ?></div>
+                  <div class="text-xs text-muted"><?= htmlspecialchars($u['nama_prodi']) ?></div>
                 </td>
-                <td style="font-size: var(--font-size-sm);">
+                <td data-label="No. HP" class="text-sm">
                   <?= htmlspecialchars($u['no_hp']) ?>
                 </td>
-                <td>
+                <td data-label="Status">
                   <?php if ($u['is_banned']): ?>
-                    <span class="badge" style="background:#fef2f2; color:var(--danger); border: 1px solid #fecaca;">Banned</span>
+                    <span class="badge badge--banned">Diblokir</span>
                   <?php else: ?>
-                    <span class="badge" style="background:var(--brand-green-soft); color:#166534;">Aktif</span>
+                    <span class="badge badge--active">Aktif</span>
                   <?php endif; ?>
                 </td>
-                <td class="text-muted" style="font-size: var(--font-size-sm);">
+                <td data-label="Tanggal Daftar" class="text-muted text-sm">
                   <?= date('d M Y', strtotime($u['created_at'])) ?>
                 </td>
-                <td style="text-align: right;">
+                <td data-label="Aksi" class="text-right">
                   <form action="users.php" method="POST" onsubmit="return confirm('Yakin ingin <?= $u['is_banned'] ? 'mengaktifkan kembali' : 'menonaktifkan (ban)' ?> akun ini?');">
                     <input type="hidden" name="user_id" value="<?= $u['id'] ?>">
                     <?php if ($u['is_banned']): ?>
                       <input type="hidden" name="action" value="unban">
-                      <button type="submit" class="btn btn--outline btn--sm">Unban</button>
+                      <button type="submit" class="btn btn--secondary btn--sm">
+                        <svg class="icon icon--sm text-success" aria-hidden="true"><use href="#i-check"/></svg>
+                        <span>Pulihkan</span>
+                      </button>
                     <?php else: ?>
                       <input type="hidden" name="action" value="ban">
-                      <button type="submit" class="btn btn--outline btn--sm" style="color: var(--danger); border-color: var(--danger);">Ban</button>
+                      <button type="submit" class="btn btn--danger-outline btn--sm">
+                        <svg class="icon icon--sm" aria-hidden="true"><use href="#i-alert"/></svg>
+                        <span>Blokir</span>
+                      </button>
                     <?php endif; ?>
                   </form>
                 </td>

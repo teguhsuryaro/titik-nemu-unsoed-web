@@ -1,6 +1,7 @@
 <?php
 /**
  * admin/dashboard.php — Dashboard Admin
+ * Refactored: Pure Semantic HTML5, No <style> or Inline Styles, Shared Admin Nav
  */
 
 session_start();
@@ -56,59 +57,52 @@ require_once '../includes/header.php';
 require_once '../includes/navbar.php';
 ?>
 
-<style>
-/* Style tambahan admin */
-.admin-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; }
-.admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-.table--admin tbody tr:nth-child(even) { background-color: var(--page); }
-.table--admin tbody tr:hover { background-color: #f1f5f9; }
-</style>
-
 <section class="section">
   <div class="container">
+    
     <div class="page-header">
       <h1 class="page-header__title">Panel Admin</h1>
       <p class="page-header__sub">Selamat datang, <?= htmlspecialchars(explode(' ', $adminName)[0]) ?>. Ringkasan aktivitas TitikNemu Unsoed.</p>
     </div>
 
-    <!-- Quick Links -->
-    <div style="display: flex; gap: .5rem; margin-bottom: 2rem;">
-      <a href="users.php" class="btn btn--outline">Manajemen Pengguna</a>
-      <a href="laporan.php" class="btn btn--outline">Manajemen Laporan</a>
-    </div>
+    <!-- Tab Navigasi Admin -->
+    <?php require_once '../includes/admin_nav.php'; ?>
 
     <!-- Statistik -->
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-card__num" style="color: var(--ink);"><?= $stats['total_user'] ?></div>
-        <div class="stat-card__label">Total Pengguna</div>
+        <span class="stat-card__num"><?= $stats['total_user'] ?></span>
+        <span class="stat-card__label">Total Pengguna</span>
       </div>
       <div class="stat-card">
-        <div class="stat-card__num" style="color: #92400e;"><?= $stats['hilang_aktif'] ?></div>
-        <div class="stat-card__label">Hilang (Aktif)</div>
+        <span class="stat-card__num text-warning"><?= $stats['hilang_aktif'] ?></span>
+        <span class="stat-card__label">Hilang (Aktif)</span>
       </div>
       <div class="stat-card">
-        <div class="stat-card__num" style="color: #166534;"><?= $stats['ditemukan_aktif'] ?></div>
-        <div class="stat-card__label">Ditemukan (Aktif)</div>
+        <span class="stat-card__num text-success"><?= $stats['ditemukan_aktif'] ?></span>
+        <span class="stat-card__label">Ditemukan (Aktif)</span>
       </div>
       <div class="stat-card">
-        <div class="stat-card__num" style="color: var(--focus);"><?= $stats['dikembalikan'] ?></div>
-        <div class="stat-card__label">Selesai</div>
+        <span class="stat-card__num text-muted"><?= $stats['dikembalikan'] ?></span>
+        <span class="stat-card__label">Selesai</span>
       </div>
     </div>
 
     <!-- Laporan Terbaru -->
-    <div class="admin-card mt-4">
-      <div class="admin-header">
-        <h2 style="font-size: var(--font-size-lg); font-weight: 600;">Laporan Terbaru</h2>
-        <a href="laporan.php" class="btn btn--outline btn--sm">Lihat Semua</a>
+    <div class="panel">
+      <div class="section-header mb-3">
+        <h2 class="text-md font-bold">Laporan Terbaru</h2>
+        <a href="laporan.php" class="btn btn--secondary btn--sm">
+          <span>Lihat Semua</span>
+          <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+        </a>
       </div>
       
       <?php if (empty($recentItems)): ?>
-        <p class="text-muted">Belum ada laporan.</p>
+        <p class="text-muted text-sm">Belum ada laporan.</p>
       <?php else: ?>
-        <div class="table-responsive">
-          <table class="table table--admin">
+        <div class="table-wrap">
+          <table class="table table--stack">
             <thead>
               <tr>
                 <th>Nama Barang</th>
@@ -121,32 +115,35 @@ require_once '../includes/navbar.php';
             <tbody>
               <?php foreach ($recentItems as $item): ?>
                 <tr>
-                  <td style="font-weight: 500;">
-                    <a href="../detail.php?id=<?= $item['id'] ?>" target="_blank" style="color: inherit; text-decoration: underline; text-underline-offset: 3px;">
+                  <td data-label="Nama Barang">
+                    <a href="../detail.php?id=<?= $item['id'] ?>" target="_blank" class="font-semibold underline">
                       <?= htmlspecialchars($item['nama_barang']) ?>
                     </a>
                   </td>
-                  <td>
+                  <td data-label="Jenis">
                     <?php if ($item['type'] === 'lost'): ?>
                       <span class="badge badge--lost">Hilang</span>
                     <?php else: ?>
                       <span class="badge badge--found">Ditemukan</span>
                     <?php endif; ?>
                   </td>
-                  <td>
+                  <td data-label="Pelapor">
                     <?= htmlspecialchars($item['pelapor']) ?>
                     <?php if ($item['is_banned']): ?>
-                      <span class="badge" style="background: #FEE2E2; color: var(--danger); font-size: 10px; padding: 2px 6px; margin-left: 4px;">Banned</span>
+                      <span class="badge badge--banned">Banned</span>
                     <?php endif; ?>
                   </td>
-                  <td>
+                  <td data-label="Status">
                     <?php 
                       $isSelesai = ($item['status'] === 'returned' || ($item['type'] === 'lost' && $item['status'] === 'found'));
-                      if ($isSelesai) echo '<span class="text-muted">Selesai</span>';
-                      else echo '<span style="color:var(--brand-green);">Aktif</span>';
+                      if ($isSelesai) {
+                        echo '<span class="badge badge--done">Selesai</span>';
+                      } else {
+                        echo '<span class="badge badge--active">Aktif</span>';
+                      }
                     ?>
                   </td>
-                  <td class="text-muted" style="font-size: var(--font-size-sm);">
+                  <td data-label="Tanggal Upload" class="text-muted text-sm">
                     <?= date('d M Y, H:i', strtotime($item['created_at'])) ?>
                   </td>
                 </tr>
