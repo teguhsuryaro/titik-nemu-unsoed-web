@@ -84,10 +84,6 @@ require_once '../includes/navbar.php';
         <div class="stat-card__label">Total Pengguna</div>
       </div>
       <div class="stat-card">
-        <div class="stat-card__num" style="color: var(--focus);"><?= $stats['total_laporan'] ?></div>
-        <div class="stat-card__label">Total Laporan</div>
-      </div>
-      <div class="stat-card">
         <div class="stat-card__num" style="color: #92400e;"><?= $stats['hilang_aktif'] ?></div>
         <div class="stat-card__label">Hilang (Aktif)</div>
       </div>
@@ -96,8 +92,8 @@ require_once '../includes/navbar.php';
         <div class="stat-card__label">Ditemukan (Aktif)</div>
       </div>
       <div class="stat-card">
-        <div class="stat-card__num" style="color: var(--muted);"><?= $stats['dikembalikan'] ?></div>
-        <div class="stat-card__label">Selesai/Dikembalikan</div>
+        <div class="stat-card__num" style="color: var(--focus);"><?= $stats['dikembalikan'] ?></div>
+        <div class="stat-card__label">Selesai</div>
       </div>
     </div>
 
@@ -140,7 +136,7 @@ require_once '../includes/navbar.php';
                   <td>
                     <?= htmlspecialchars($item['pelapor']) ?>
                     <?php if ($item['is_banned']): ?>
-                      <span class="badge badge--lost" style="font-size: 10px; padding: 2px 4px; margin-left: 4px;">Banned</span>
+                      <span class="badge" style="background: #FEE2E2; color: var(--danger); font-size: 10px; padding: 2px 6px; margin-left: 4px;">Banned</span>
                     <?php endif; ?>
                   </td>
                   <td>

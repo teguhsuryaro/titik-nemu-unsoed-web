@@ -33,10 +33,10 @@ if (!isset($pageTitle)) {
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Stylesheet -->
-  <link rel="stylesheet" href="<?= $basePath ?>css/style.css">
+  <!-- Stylesheet (dengan cache-busting otomatis) -->
+  <link rel="stylesheet" href="<?= $basePath ?>css/style.css?v=<?= file_exists(__DIR__ . '/../css/style.css') ? filemtime(__DIR__ . '/../css/style.css') : time() ?>">
 
   <?php if (!empty($extraCss)): ?>
   <style><?= $extraCss ?></style>

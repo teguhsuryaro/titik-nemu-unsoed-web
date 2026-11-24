@@ -48,7 +48,7 @@ if (!$item) {
         <h1 style="font-size: 4rem; color: var(--border); margin-bottom: 1rem;">404</h1>
         <h2 style="font-size: var(--font-size-xl); margin-bottom: 1rem;">Barang tidak ditemukan</h2>
         <p class="text-muted mb-3">Laporan yang Anda cari tidak ada, sudah dihapus, atau disembunyikan oleh sistem.</p>
-        <a href="search.php" class="btn btn--primary">Cari Barang Lain</a>
+        <a href="index.php" class="btn btn--primary">Cari Barang Lain</a>
       </div>
     </section>
     <?php
@@ -85,6 +85,7 @@ $waLink = "https://wa.me/{$waNumber}?text={$waMessage}";
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
 }
 .detail-photo {
@@ -202,7 +203,7 @@ $waLink = "https://wa.me/{$waNumber}?text={$waMessage}";
 
     <!-- Breadcrumb back -->
     <div style="max-width: 900px; margin: 0 auto 1rem;">
-      <a href="search.php" class="text-muted" style="font-size: var(--font-size-sm); display: inline-flex; align-items: center; gap: .25rem;">
+      <a href="index.php" class="text-muted" style="font-size: var(--font-size-sm); display: inline-flex; align-items: center; gap: .25rem; font-weight: 500;">
         &larr; Kembali ke Daftar Barang
       </a>
     </div>
@@ -223,9 +224,9 @@ $waLink = "https://wa.me/{$waNumber}?text={$waMessage}";
       <div class="detail-content">
         
         <div class="detail-header">
-          <div style="margin-bottom: 1rem;">
+          <div style="margin-bottom: .75rem;">
             <?php if ($isReturned): ?>
-              <span class="badge badge--returned">Dikembalikan / Selesai</span>
+              <span class="badge badge--returned">Selesai</span>
             <?php elseif ($item['type'] === 'lost'): ?>
               <span class="badge badge--lost">Barang Hilang</span>
             <?php else: ?>
@@ -233,9 +234,6 @@ $waLink = "https://wa.me/{$waNumber}?text={$waMessage}";
             <?php endif; ?>
           </div>
           <h1 class="detail-title"><?= htmlspecialchars($item['nama_barang']) ?></h1>
-          <div class="text-muted" style="font-size: var(--font-size-sm);">
-            Dilaporkan pada <?= date('d M Y, H:i', strtotime($item['created_at'])) ?>
-          </div>
         </div>
 
         <div class="detail-meta-grid">
