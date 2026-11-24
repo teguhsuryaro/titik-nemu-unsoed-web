@@ -1,6 +1,7 @@
 <?php
 /**
  * dashboard.php — Halaman Laporan Saya (Dashboard Pengguna)
+ * Refactored: Stackable Mobile Table, Semantic Stats, Sprite Icons, No Inline Styles
  */
 
 session_start();
@@ -34,8 +35,19 @@ $stmt->execute();
 $myItemsResult = $stmt->get_result();
 
 $myItems = [];
+$stats = ['total' => 0, 'active_lost' => 0, 'active_found' => 0, 'done' => 0];
+
 while ($row = $myItemsResult->fetch_assoc()) {
     $myItems[] = $row;
+    $stats['total']++;
+    $isSelesai = ($row['status'] === 'returned' || ($row['type'] === 'lost' && $row['status'] === 'found'));
+    if ($isSelesai) {
+        $stats['done']++;
+    } elseif ($row['type'] === 'lost') {
+        $stats['active_lost']++;
+    } else {
+        $stats['active_found']++;
+    }
 }
 $stmt->close();
 
@@ -46,87 +58,124 @@ require_once 'includes/navbar.php';
 <section class="section">
   <div class="container">
 
-    <div class="section-header" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div class="section-header">
       <div>
-        <h1 class="page-header__title" style="margin-bottom: .25rem;">Laporan Saya</h1>
-        <p class="page-header__sub" style="margin-bottom: 0;">Halo <?= htmlspecialchars($firstName) ?>, kelola daftar barang yang pernah Anda laporkan.</p>
+        <h1 class="page-header__title">Laporan Saya</h1>
+        <p class="page-header__sub">Halo <?= htmlspecialchars($firstName) ?>, pantau dan kelola seluruh laporan barang Anda.</p>
       </div>
-      <a href="laporan/tambah.php" class="btn btn--primary">+ Buat Laporan</a>
+      <a href="laporan/tambah.php" class="btn btn--primary">
+        <svg class="icon icon--sm" aria-hidden="true"><use href="#i-plus-circle"/></svg>
+        <span>Buat Laporan</span>
+      </a>
     </div>
 
     <!-- Flash message -->
     <?php if (isset($_SESSION['flash_msg'])): ?>
-      <div class="alert alert--success mb-3">
-        <?= htmlspecialchars($_SESSION['flash_msg']) ?>
+      <div class="alert alert--success" role="status">
+        <svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg>
+        <span><?= htmlspecialchars($_SESSION['flash_msg']) ?></span>
       </div>
       <?php unset($_SESSION['flash_msg']); ?>
     <?php endif; ?>
 
+    <!-- Ringkasan Statistik User -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-card__num"><?= $stats['total'] ?></span>
+        <span class="stat-card__label">Total Laporan</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__num text-warning"><?= $stats['active_lost'] ?></span>
+        <span class="stat-card__label">Barang Hilang</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__num text-success"><?= $stats['active_found'] ?></span>
+        <span class="stat-card__label">Barang Ditemukan</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__num text-muted"><?= $stats['done'] ?></span>
+        <span class="stat-card__label">Selesai</span>
+      </div>
+    </div>
+
     <?php if (empty($myItems)): ?>
-      <div class="alert" style="background: var(--surface); border: 1px dashed var(--border); text-align: center; padding: 3rem 1rem;">
-        <p class="text-muted" style="margin-bottom: 1rem;">Anda belum membuat laporan apa pun.</p>
-        <a href="laporan/tambah.php" class="btn btn--primary">Buat Laporan Pertama</a>
+      <div class="empty-state">
+        <div class="empty-state__icon">
+          <svg class="icon icon--xl" aria-hidden="true"><use href="#i-list"/></svg>
+        </div>
+        <h2 class="empty-state__title">Belum ada laporan</h2>
+        <p class="empty-state__desc">Anda belum pernah membuat laporan barang hilang maupun penemuan barang.</p>
+        <a href="laporan/tambah.php" class="btn btn--primary btn--sm">Buat Laporan Pertama</a>
       </div>
     <?php else: ?>
-      <div class="table-responsive">
-        <table class="table">
+      <div class="table-wrap">
+        <table class="table table--stack">
           <thead>
             <tr>
               <th>Nama Barang</th>
               <th>Jenis</th>
               <th>Status</th>
               <th>Tanggal</th>
-              <th style="text-align: right;">Aksi</th>
+              <th class="text-right">Aksi</th>
             </tr>
           </thead>
           <tbody>
             <?php foreach ($myItems as $item): ?>
               <?php $isSelesai = ($item['status'] === 'returned' || ($item['type'] === 'lost' && $item['status'] === 'found')); ?>
               <tr>
-                <td style="font-weight: 500;">
-                  <a href="detail.php?id=<?= $item['id'] ?>" style="color: inherit; text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 3px;">
+                <td data-label="Nama Barang">
+                  <a href="detail.php?id=<?= $item['id'] ?>" class="font-semibold underline">
                     <?= htmlspecialchars($item['nama_barang']) ?>
                   </a>
                 </td>
-                <td>
+                <td data-label="Jenis">
                   <?php if ($item['type'] === 'lost'): ?>
-                    <span class="badge badge--lost">Hilang</span>
+                    <span class="badge badge--lost">
+                      <svg class="icon icon--sm" aria-hidden="true"><use href="#i-search"/></svg>
+                      <span>Hilang</span>
+                    </span>
                   <?php else: ?>
-                    <span class="badge badge--found">Ditemukan</span>
+                    <span class="badge badge--found">
+                      <svg class="icon icon--sm" aria-hidden="true"><use href="#i-gift"/></svg>
+                      <span>Ditemukan</span>
+                    </span>
                   <?php endif; ?>
                 </td>
-                <td>
+                <td data-label="Status">
                   <?php if ($isSelesai): ?>
-                    <span class="badge badge--returned">Selesai</span>
+                    <span class="badge badge--done">
+                      <svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>
+                      <span>Selesai</span>
+                    </span>
                   <?php elseif ($item['status'] === 'lost'): ?>
-                    <span style="color:#92400e;font-size:var(--font-size-sm);font-weight:600;">Masih Dicari</span>
+                    <span class="text-sm font-semibold text-warning">Masih Dicari</span>
                   <?php else: ?>
-                    <span style="color:#166534;font-size:var(--font-size-sm);font-weight:600;">Menunggu Diambil</span>
+                    <span class="text-sm font-semibold text-success">Menunggu Diambil</span>
                   <?php endif; ?>
                 </td>
-                <td class="text-muted" style="font-size: var(--font-size-sm); white-space: nowrap;">
+                <td data-label="Tanggal" class="text-muted text-sm">
                   <?= date('d M Y', strtotime($item['tanggal'])) ?>
                 </td>
-                <td style="text-align: right; white-space: nowrap;">
-                  <div style="display: inline-flex; align-items: center; gap: .5rem;">
+                <td data-label="Aksi" class="text-right">
+                  <div class="flex items-center justify-end gap-2">
                     <?php if (!$isSelesai): ?>
-                      <form action="laporan/update_status.php" method="POST" style="display:inline-block;" onsubmit="return confirm('Tandai laporan ini sebagai selesai?');">
+                      <form action="laporan/update_status.php" method="POST" onsubmit="return confirm('Tandai laporan ini sebagai selesai/dikembalikan?');">
                         <input type="hidden" name="id" value="<?= $item['id'] ?>">
-                        <button type="submit" class="btn btn--green-outline btn--sm" title="Tandai Selesai">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                          Selesai
+                        <button type="submit" class="btn btn--found-soft btn--sm" title="Tandai Selesai">
+                          <svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>
+                          <span>Selesai</span>
                         </button>
                       </form>
                     <?php endif; ?>
 
-                    <a href="laporan/edit.php?id=<?= $item['id'] ?>" class="btn btn--outline btn--sm" title="Edit Laporan" style="padding: .375rem .5rem;">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    <a href="laporan/edit.php?id=<?= $item['id'] ?>" class="btn btn--secondary btn--sm" title="Edit Laporan" aria-label="Edit laporan <?= htmlspecialchars($item['nama_barang']) ?>">
+                      <svg class="icon icon--sm" aria-hidden="true"><use href="#i-pencil"/></svg>
                     </a>
 
-                    <form action="laporan/hapus.php" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus laporan ini secara permanen?');">
+                    <form action="laporan/hapus.php" method="POST" onsubmit="return confirm('Yakin ingin menghapus laporan ini secara permanen?');">
                       <input type="hidden" name="id" value="<?= $item['id'] ?>">
-                      <button type="submit" class="btn btn--outline btn--sm" style="color: var(--danger); border-color: transparent; padding: .375rem .5rem;" title="Hapus Laporan">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                      <button type="submit" class="btn btn--danger-outline btn--sm" title="Hapus Laporan" aria-label="Hapus laporan <?= htmlspecialchars($item['nama_barang']) ?>">
+                        <svg class="icon icon--sm" aria-hidden="true"><use href="#i-trash"/></svg>
                       </button>
                     </form>
                   </div>

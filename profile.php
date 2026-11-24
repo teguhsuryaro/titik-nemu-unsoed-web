@@ -1,6 +1,7 @@
 <?php
 /**
  * profile.php — Halaman Profil Pengguna
+ * Refactored: Pure Semantic HTML5, No Inline Styles, Sprite Icons
  */
 
 session_start();
@@ -30,7 +31,6 @@ $user = $stmt->get_result()->fetch_assoc();
 $stmt->close();
 
 if (!$user) {
-    // Jika data tidak ditemukan (kasus langka), hapus sesi
     header('Location: logout.php');
     exit;
 }
@@ -40,59 +40,53 @@ require_once 'includes/navbar.php';
 ?>
 
 <section class="section">
-  <div class="container">
-    <div style="max-width: 600px; margin: 0 auto;">
-      
-      <div class="page-header text-center">
-        <div style="width: 80px; height: 80px; background: var(--brand-yellow); color: var(--ink); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; margin: 0 auto 1rem;">
-          <?= strtoupper(mb_substr($user['nama'], 0, 1)) ?>
-        </div>
-        <h1 class="page-header__title">Profil Saya</h1>
-        <p class="page-header__sub">Informasi akun TitikNemu Unsoed Anda.</p>
+  <div class="container form-wrapper">
+    
+    <div class="page-header text-center">
+      <div class="profile-avatar" aria-hidden="true">
+        <?= strtoupper(mb_substr($user['nama'], 0, 1)) ?>
       </div>
-
-      <div class="card" style="padding: 1.5rem; margin-bottom: 2rem;">
-        <div style="display: grid; gap: 1.25rem;">
-          
-          <div style="border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
-            <div class="text-muted" style="font-size: var(--font-size-sm); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: .25rem;">Nama Lengkap</div>
-            <div style="font-size: var(--font-size-lg); font-weight: 500; color: var(--ink);"><?= htmlspecialchars($user['nama']) ?></div>
-          </div>
-
-          <div style="border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
-            <div class="text-muted" style="font-size: var(--font-size-sm); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: .25rem;">Email Unsoed</div>
-            <div style="font-size: 1rem; font-weight: 500; color: var(--ink);"><?= htmlspecialchars($user['email']) ?></div>
-          </div>
-
-          <div style="border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
-            <div class="text-muted" style="font-size: var(--font-size-sm); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: .25rem;">Nomor HP / WhatsApp</div>
-            <div style="font-size: 1rem; font-weight: 500; color: var(--ink);"><?= htmlspecialchars($user['no_hp']) ?></div>
-          </div>
-
-          <div style="border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
-            <div class="text-muted" style="font-size: var(--font-size-sm); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: .25rem;">Akademik</div>
-            <div style="font-size: 1rem; font-weight: 500; color: var(--ink);">
-              <?= htmlspecialchars($user['nama_fakultas']) ?><br>
-              <span class="text-muted" style="font-size: var(--font-size-sm);"><?= htmlspecialchars($user['jenjang'] . ' - ' . $user['nama_prodi']) ?></span>
-            </div>
-          </div>
-
-          <div>
-            <div class="text-muted" style="font-size: var(--font-size-sm); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: .25rem;">Bergabung Sejak</div>
-            <div style="font-size: 1rem; font-weight: 500; color: var(--ink);"><?= date('d F Y', strtotime($user['created_at'])) ?></div>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="text-center" style="margin-top: 1.5rem;">
-        <a href="logout.php" class="btn btn--outline" style="color: var(--danger); border-color: var(--danger);">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-right: 6px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-          Keluar dari Akun
-        </a>
-      </div>
-
+      <h1 class="page-header__title"><?= htmlspecialchars($user['nama']) ?></h1>
+      <p class="page-header__sub">Akun Mahasiswa Universitas Jenderal Soedirman</p>
     </div>
+
+    <div class="panel mb-4">
+      <div class="profile-field">
+        <span class="profile-field__label">Nama Lengkap</span>
+        <span class="profile-field__val"><?= htmlspecialchars($user['nama']) ?></span>
+      </div>
+
+      <div class="profile-field">
+        <span class="profile-field__label">Email Kampus</span>
+        <span class="profile-field__val"><?= htmlspecialchars($user['email']) ?></span>
+      </div>
+
+      <div class="profile-field">
+        <span class="profile-field__label">No. HP / WhatsApp</span>
+        <span class="profile-field__val"><?= htmlspecialchars($user['no_hp']) ?></span>
+      </div>
+
+      <div class="profile-field">
+        <span class="profile-field__label">Akademik</span>
+        <span class="profile-field__val">
+          <?= htmlspecialchars($user['nama_fakultas']) ?><br>
+          <span class="text-sm text-muted"><?= htmlspecialchars($user['jenjang'] . ' - ' . $user['nama_prodi']) ?></span>
+        </span>
+      </div>
+
+      <div class="profile-field">
+        <span class="profile-field__label">Bergabung Sejak</span>
+        <span class="profile-field__val"><?= date('d F Y', strtotime($user['created_at'])) ?></span>
+      </div>
+    </div>
+
+    <div class="text-center">
+      <a href="logout.php" class="btn btn--danger-outline btn--lg">
+        <svg class="icon" aria-hidden="true"><use href="#i-log-out"/></svg>
+        <span>Keluar dari Akun</span>
+      </a>
+    </div>
+
   </div>
 </section>
 
