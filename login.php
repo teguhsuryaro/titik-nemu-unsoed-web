@@ -1,6 +1,7 @@
 <?php
 /**
  * login.php — Halaman Login
+ * Refactored: Semantic Panel, Accessible Inputs, Sprite Icons
  */
 
 $basePath  = '';
@@ -82,73 +83,90 @@ require_once 'includes/navbar.php';
 ?>
 
 <section class="section">
-  <div class="container">
-    <div class="auth-card">
-      <div class="auth-card__header">
-        <h1 class="auth-card__title">Masuk</h1>
-        <p class="auth-card__sub">Masuk ke akun TitikNemu Unsoed Anda.</p>
+  <div class="container auth-wrapper">
+    
+    <div class="panel">
+      <div class="text-center mb-4">
+        <h1 class="page-header__title">Masuk ke Akun</h1>
+        <p class="page-header__sub">Gunakan email mahasiswa Unsoed Anda.</p>
       </div>
 
       <?php if ($flashSuccess): ?>
-        <div class="alert alert--success"><?= htmlspecialchars($flashSuccess) ?></div>
+        <div class="alert alert--success" role="status">
+          <svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg>
+          <span><?= htmlspecialchars($flashSuccess) ?></span>
+        </div>
       <?php endif; ?>
 
       <?php if (!empty($errors['general'])): ?>
-        <div class="alert alert--error"><?= htmlspecialchars($errors['general']) ?></div>
+        <div class="alert alert--error" role="alert">
+          <svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>
+          <span><?= htmlspecialchars($errors['general']) ?></span>
+        </div>
       <?php endif; ?>
 
-      <form method="POST" action="login.php" class="auth-form" novalidate>
+      <form method="POST" action="login.php" novalidate>
 
         <!-- Email -->
         <div class="form-group">
           <label for="email_prefix" class="form-label">
-            Email Unsoed <span class="required" aria-label="wajib">*</span>
+            <span>Email Unsoed</span>
+            <span class="form-label__req" aria-label="Wajib diisi">*</span>
           </label>
-          <div class="input-group">
+          <div class="input-group--affix">
             <input
-              type="text" id="email_prefix" name="email_prefix"
-              class="form-input <?= isset($errors['email_prefix']) ? 'form-input--error' : '' ?>"
+              type="text" 
+              id="email_prefix" 
+              name="email_prefix"
+              class="form-control <?= isset($errors['email_prefix']) ? 'form-control--error' : '' ?>"
               value="<?= htmlspecialchars($old['email_prefix'] ?? '') ?>"
               placeholder="nama.lengkap"
               autocapitalize="none"
               autocomplete="username"
               required
             >
-            <span class="input-group__append" aria-label="domain email">@mhs.unsoed.ac.id</span>
+            <span class="input-group__suffix">@mhs.unsoed.ac.id</span>
           </div>
           <?php if (isset($errors['email_prefix'])): ?>
-            <p class="form-error"><?= htmlspecialchars($errors['email_prefix']) ?></p>
+            <p class="form-error" role="alert"><?= htmlspecialchars($errors['email_prefix']) ?></p>
           <?php endif; ?>
         </div>
 
         <!-- Password -->
         <div class="form-group">
           <label for="password" class="form-label">
-            Password <span class="required" aria-label="wajib">*</span>
+            <span>Password</span>
+            <span class="form-label__req" aria-label="Wajib diisi">*</span>
           </label>
           <input
-            type="password" id="password" name="password"
-            class="form-input <?= isset($errors['password']) ? 'form-input--error' : '' ?>"
-            placeholder="Masukkan password"
+            type="password" 
+            id="password" 
+            name="password"
+            class="form-control <?= isset($errors['password']) ? 'form-control--error' : '' ?>"
+            placeholder="Masukkan kata sandi akun"
             autocomplete="current-password"
             required
           >
           <?php if (isset($errors['password'])): ?>
-            <p class="form-error"><?= htmlspecialchars($errors['password']) ?></p>
+            <p class="form-error" role="alert"><?= htmlspecialchars($errors['password']) ?></p>
           <?php endif; ?>
         </div>
 
-        <!-- Submit -->
-        <div class="form-group mt-2">
-          <button type="submit" class="btn btn--primary btn--block btn--lg">Masuk</button>
+        <!-- Submit Button -->
+        <div class="mt-4 mb-3">
+          <button type="submit" class="btn btn--primary btn--block btn--lg">
+            <span>Masuk</span>
+            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+          </button>
         </div>
 
-        <p class="auth-card__footer">
-          Belum punya akun? <a href="register.php">Daftar di sini</a>
+        <p class="text-sm text-center text-muted">
+          Belum punya akun? <a href="register.php" class="font-semibold text-ink underline">Daftar di sini</a>
         </p>
 
       </form>
     </div>
+
   </div>
 </section>
 

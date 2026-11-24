@@ -1,6 +1,7 @@
 <?php
 /**
- * register.php — Halaman Registrasi
+ * register.php — Halaman Registrasi Akun
+ * Refactored: Pure Semantic HTML5, Accessible Form, AJAX Faculty-Prodi Sync
  */
 
 $basePath  = '';
@@ -25,8 +26,8 @@ if ($resFak) {
 }
 
 // ── Proses form ──
-$errors    = [];
-$old       = []; // Simpan input lama agar tidak hilang saat validasi gagal
+$errors = [];
+$old    = []; // Simpan input lama agar tidak hilang saat validasi gagal
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Ambil & trim input
@@ -129,7 +130,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param('sssiis', $nama, $emailFull, $noHp, $fakultasId, $prodiId, $hashedPassword);
 
         if ($stmt->execute()) {
-            // Redirect ke login dengan pesan sukses
             $_SESSION['flash_success'] = 'Pendaftaran berhasil! Silakan masuk dengan akun baru Anda.';
             header('Location: login.php');
             exit;
@@ -153,93 +153,107 @@ if (!empty($old['fakultas_id'])) {
     $stmtProdi->close();
 }
 
-// Mulai output HTML — session sudah dimulai di atas, jadi skip session_start di header
 require_once 'includes/header.php';
 require_once 'includes/navbar.php';
 ?>
 
 <section class="section">
-  <div class="container">
-    <div class="auth-card">
-      <div class="auth-card__header">
-        <h1 class="auth-card__title">Daftar Akun</h1>
-        <p class="auth-card__sub">Buat akun TitikNemu Unsoed untuk melaporkan dan mencari barang.</p>
+  <div class="container auth-wrapper">
+    <div class="panel">
+      
+      <div class="text-center mb-4">
+        <h1 class="page-header__title">Daftar Akun</h1>
+        <p class="page-header__sub">Bergabung dengan TitikNemu Unsoed untuk mencari atau mengembalikan barang.</p>
       </div>
 
       <?php if (!empty($errors['general'])): ?>
-        <div class="alert alert--error"><?= htmlspecialchars($errors['general']) ?></div>
+        <div class="alert alert--error" role="alert">
+          <svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>
+          <span><?= htmlspecialchars($errors['general']) ?></span>
+        </div>
       <?php endif; ?>
 
-      <form method="POST" action="register.php" class="auth-form" novalidate>
+      <form method="POST" action="register.php" novalidate>
 
         <!-- Nama Lengkap -->
         <div class="form-group">
           <label for="nama" class="form-label">
-            Nama Lengkap <span class="required" aria-label="wajib">*</span>
+            <span>Nama Lengkap</span>
+            <span class="form-label__req" aria-label="Wajib diisi">*</span>
           </label>
           <input
-            type="text" id="nama" name="nama"
-            class="form-input <?= isset($errors['nama']) ? 'form-input--error' : '' ?>"
+            type="text" 
+            id="nama" 
+            name="nama"
+            class="form-control <?= isset($errors['nama']) ? 'form-control--error' : '' ?>"
             value="<?= htmlspecialchars($old['nama'] ?? '') ?>"
-            placeholder="Masukkan nama lengkap"
+            placeholder="Masukkan nama lengkap Anda"
             required
           >
           <?php if (isset($errors['nama'])): ?>
-            <p class="form-error"><?= htmlspecialchars($errors['nama']) ?></p>
+            <p class="form-error" role="alert"><?= htmlspecialchars($errors['nama']) ?></p>
           <?php endif; ?>
         </div>
 
-        <!-- Email -->
+        <!-- Email Unsoed -->
         <div class="form-group">
           <label for="email_prefix" class="form-label">
-            Email Unsoed <span class="required" aria-label="wajib">*</span>
+            <span>Email Unsoed</span>
+            <span class="form-label__req" aria-label="Wajib diisi">*</span>
           </label>
-          <div class="input-group">
+          <div class="input-group--affix">
             <input
-              type="text" id="email_prefix" name="email_prefix"
-              class="form-input <?= isset($errors['email_prefix']) ? 'form-input--error' : '' ?>"
+              type="text" 
+              id="email_prefix" 
+              name="email_prefix"
+              class="form-control <?= isset($errors['email_prefix']) ? 'form-control--error' : '' ?>"
               value="<?= htmlspecialchars($old['email_prefix'] ?? '') ?>"
               placeholder="nama.lengkap"
               autocapitalize="none"
               autocomplete="username"
               required
             >
-            <span class="input-group__append" aria-label="domain email">@mhs.unsoed.ac.id</span>
+            <span class="input-group__suffix">@mhs.unsoed.ac.id</span>
           </div>
           <?php if (isset($errors['email_prefix'])): ?>
-            <p class="form-error"><?= htmlspecialchars($errors['email_prefix']) ?></p>
+            <p class="form-error" role="alert"><?= htmlspecialchars($errors['email_prefix']) ?></p>
           <?php else: ?>
-            <p class="form-hint">Masukkan bagian depan email Unsoed Anda.</p>
+            <p class="form-hint">Masukkan ID email Unsoed tanpa domain.</p>
           <?php endif; ?>
         </div>
 
-        <!-- No HP -->
+        <!-- No HP / WhatsApp -->
         <div class="form-group">
           <label for="no_hp" class="form-label">
-            No. HP/WhatsApp <span class="required" aria-label="wajib">*</span>
+            <span>No. HP / WhatsApp</span>
+            <span class="form-label__req" aria-label="Wajib diisi">*</span>
           </label>
           <input
-            type="tel" id="no_hp" name="no_hp"
-            class="form-input <?= isset($errors['no_hp']) ? 'form-input--error' : '' ?>"
+            type="tel" 
+            id="no_hp" 
+            name="no_hp"
+            class="form-control <?= isset($errors['no_hp']) ? 'form-control--error' : '' ?>"
             value="<?= htmlspecialchars($old['no_hp'] ?? '') ?>"
             placeholder="08xxxxxxxxxx"
             required
           >
           <?php if (isset($errors['no_hp'])): ?>
-            <p class="form-error"><?= htmlspecialchars($errors['no_hp']) ?></p>
+            <p class="form-error" role="alert"><?= htmlspecialchars($errors['no_hp']) ?></p>
           <?php else: ?>
-            <p class="form-hint">Nomor ini akan digunakan untuk tombol "Hubungi via WhatsApp".</p>
+            <p class="form-hint">Digunakan saat pelapor/penemu menghubungi Anda via WhatsApp.</p>
           <?php endif; ?>
         </div>
 
         <!-- Fakultas -->
         <div class="form-group">
           <label for="fakultas_id" class="form-label">
-            Fakultas <span class="required" aria-label="wajib">*</span>
+            <span>Fakultas</span>
+            <span class="form-label__req" aria-label="Wajib diisi">*</span>
           </label>
           <select
-            id="fakultas_id" name="fakultas_id"
-            class="form-select <?= isset($errors['fakultas_id']) ? 'form-input--error' : '' ?>"
+            id="fakultas_id" 
+            name="fakultas_id"
+            class="form-select <?= isset($errors['fakultas_id']) ? 'form-select--error' : '' ?>"
             required
           >
             <option value="">Pilih Fakultas</option>
@@ -252,18 +266,20 @@ require_once 'includes/navbar.php';
             <?php endforeach; ?>
           </select>
           <?php if (isset($errors['fakultas_id'])): ?>
-            <p class="form-error"><?= htmlspecialchars($errors['fakultas_id']) ?></p>
+            <p class="form-error" role="alert"><?= htmlspecialchars($errors['fakultas_id']) ?></p>
           <?php endif; ?>
         </div>
 
         <!-- Program Studi -->
         <div class="form-group">
           <label for="prodi_id" class="form-label">
-            Program Studi <span class="required" aria-label="wajib">*</span>
+            <span>Program Studi</span>
+            <span class="form-label__req" aria-label="Wajib diisi">*</span>
           </label>
           <select
-            id="prodi_id" name="prodi_id"
-            class="form-select <?= isset($errors['prodi_id']) ? 'form-input--error' : '' ?>"
+            id="prodi_id" 
+            name="prodi_id"
+            class="form-select <?= isset($errors['prodi_id']) ? 'form-select--error' : '' ?>"
             required
           >
             <option value="">Pilih Program Studi</option>
@@ -276,7 +292,7 @@ require_once 'includes/navbar.php';
             <?php endforeach; ?>
           </select>
           <?php if (isset($errors['prodi_id'])): ?>
-            <p class="form-error"><?= htmlspecialchars($errors['prodi_id']) ?></p>
+            <p class="form-error" role="alert"><?= htmlspecialchars($errors['prodi_id']) ?></p>
           <?php endif; ?>
           <p class="form-hint prodi-hint" <?= empty($prodiList) && empty($errors['prodi_id']) ? '' : 'style="display:none;"' ?>>
             Pilih fakultas terlebih dahulu.
@@ -286,44 +302,53 @@ require_once 'includes/navbar.php';
         <!-- Password -->
         <div class="form-group">
           <label for="password" class="form-label">
-            Password <span class="required" aria-label="wajib">*</span>
+            <span>Password</span>
+            <span class="form-label__req" aria-label="Wajib diisi">*</span>
           </label>
           <input
-            type="password" id="password" name="password"
-            class="form-input <?= isset($errors['password']) ? 'form-input--error' : '' ?>"
+            type="password" 
+            id="password" 
+            name="password"
+            class="form-control <?= isset($errors['password']) ? 'form-control--error' : '' ?>"
             placeholder="Minimal 6 karakter"
             autocomplete="new-password"
             required
           >
           <?php if (isset($errors['password'])): ?>
-            <p class="form-error"><?= htmlspecialchars($errors['password']) ?></p>
+            <p class="form-error" role="alert"><?= htmlspecialchars($errors['password']) ?></p>
           <?php endif; ?>
         </div>
 
         <!-- Konfirmasi Password -->
         <div class="form-group">
           <label for="password_confirm" class="form-label">
-            Konfirmasi Password <span class="required" aria-label="wajib">*</span>
+            <span>Konfirmasi Password</span>
+            <span class="form-label__req" aria-label="Wajib diisi">*</span>
           </label>
           <input
-            type="password" id="password_confirm" name="password_confirm"
-            class="form-input <?= isset($errors['password_confirm']) ? 'form-input--error' : '' ?>"
-            placeholder="Ulangi password"
+            type="password" 
+            id="password_confirm" 
+            name="password_confirm"
+            class="form-control <?= isset($errors['password_confirm']) ? 'form-control--error' : '' ?>"
+            placeholder="Ulangi password di atas"
             autocomplete="new-password"
             required
           >
           <?php if (isset($errors['password_confirm'])): ?>
-            <p class="form-error"><?= htmlspecialchars($errors['password_confirm']) ?></p>
+            <p class="form-error" role="alert"><?= htmlspecialchars($errors['password_confirm']) ?></p>
           <?php endif; ?>
         </div>
 
-        <!-- Submit -->
-        <div class="form-group mt-2">
-          <button type="submit" class="btn btn--primary btn--block btn--lg">Daftar</button>
+        <!-- Submit Button -->
+        <div class="mt-4 mb-3">
+          <button type="submit" class="btn btn--primary btn--block btn--lg">
+            <span>Daftar Akun</span>
+            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+          </button>
         </div>
 
-        <p class="auth-card__footer">
-          Sudah punya akun? <a href="login.php">Masuk di sini</a>
+        <p class="text-sm text-center text-muted">
+          Sudah punya akun? <a href="login.php" class="font-semibold text-ink underline">Masuk di sini</a>
         </p>
 
       </form>
