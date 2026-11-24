@@ -4,7 +4,6 @@
  *
  * Variabel opsional (set sebelum include):
  *   $pageTitle  — judul halaman (default: 'TitikNemu Unsoed')
- *   $extraCss   — string CSS tambahan per halaman
  */
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -18,7 +17,7 @@ if (!isset($basePath)) {
 }
 
 if (!isset($pageTitle)) {
-    $pageTitle = 'TitikNemu Unsoed';
+    $pageTitle = 'TitikNemu Unsoed — Cari. Temukan. Kembalikan.';
 }
 ?>
 <!DOCTYPE html>
@@ -27,6 +26,9 @@ if (!isset($pageTitle)) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="TitikNemu Unsoed — Sistem informasi barang hilang dan ditemukan untuk mahasiswa Universitas Jenderal Soedirman.">
+  <meta name="theme-color" content="#FFD84D">
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z' fill='%23FFD84D' stroke='%23172033' stroke-width='1.8'/%3E%3Ccircle cx='12' cy='10' r='3' fill='%23172033'/%3E%3C/svg%3E">
 
   <title><?= htmlspecialchars($pageTitle) ?></title>
 
@@ -37,9 +39,5 @@ if (!isset($pageTitle)) {
 
   <!-- Stylesheet (dengan cache-busting otomatis) -->
   <link rel="stylesheet" href="<?= $basePath ?>css/style.css?v=<?= file_exists(__DIR__ . '/../css/style.css') ? filemtime(__DIR__ . '/../css/style.css') : time() ?>">
-
-  <?php if (!empty($extraCss)): ?>
-  <style><?= $extraCss ?></style>
-  <?php endif; ?>
 </head>
-<body>
+<body class="site">
