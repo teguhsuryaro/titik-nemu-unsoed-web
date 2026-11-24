@@ -305,15 +305,20 @@ require_once 'includes/navbar.php';
             <span>Password</span>
             <span class="form-label__req" aria-label="Wajib diisi">*</span>
           </label>
-          <input
-            type="password" 
-            id="password" 
-            name="password"
-            class="form-control <?= isset($errors['password']) ? 'form-control--error' : '' ?>"
-            placeholder="Minimal 6 karakter"
-            autocomplete="new-password"
-            required
-          >
+          <div class="password-field">
+            <input
+              type="password" 
+              id="password" 
+              name="password"
+              class="form-control <?= isset($errors['password']) ? 'form-control--error' : '' ?>"
+              placeholder="Minimal 6 karakter"
+              autocomplete="new-password"
+              required
+            >
+            <button type="button" class="password-toggle" data-password-toggle="password" aria-label="Tampilkan kata sandi" aria-pressed="false">
+              <svg class="icon" aria-hidden="true"><use href="#i-eye"/></svg>
+            </button>
+          </div>
           <?php if (isset($errors['password'])): ?>
             <p class="form-error" role="alert"><?= htmlspecialchars($errors['password']) ?></p>
           <?php endif; ?>
@@ -325,15 +330,20 @@ require_once 'includes/navbar.php';
             <span>Konfirmasi Password</span>
             <span class="form-label__req" aria-label="Wajib diisi">*</span>
           </label>
-          <input
-            type="password" 
-            id="password_confirm" 
-            name="password_confirm"
-            class="form-control <?= isset($errors['password_confirm']) ? 'form-control--error' : '' ?>"
-            placeholder="Ulangi password di atas"
-            autocomplete="new-password"
-            required
-          >
+          <div class="password-field">
+            <input
+              type="password" 
+              id="password_confirm" 
+              name="password_confirm"
+              class="form-control <?= isset($errors['password_confirm']) ? 'form-control--error' : '' ?>"
+              placeholder="Ulangi password di atas"
+              autocomplete="new-password"
+              required
+            >
+            <button type="button" class="password-toggle" data-password-toggle="password_confirm" aria-label="Tampilkan konfirmasi kata sandi" aria-pressed="false">
+              <svg class="icon" aria-hidden="true"><use href="#i-eye"/></svg>
+            </button>
+          </div>
           <?php if (isset($errors['password_confirm'])): ?>
             <p class="form-error" role="alert"><?= htmlspecialchars($errors['password_confirm']) ?></p>
           <?php endif; ?>

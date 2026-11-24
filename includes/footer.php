@@ -78,6 +78,25 @@ $isLoggedIn = isset($_SESSION['user_id']);
       }
     });
   }
+
+  /* ── Password visibility toggle ── */
+  var passwordToggles = document.querySelectorAll('[data-password-toggle]');
+  passwordToggles.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var targetId = this.getAttribute('data-password-toggle');
+      var input = document.getElementById(targetId);
+      var useEl = this.querySelector('use');
+      if (!input) return;
+
+      var isHidden = input.type === 'password';
+      input.type = isHidden ? 'text' : 'password';
+      this.setAttribute('aria-pressed', String(isHidden));
+      this.setAttribute('aria-label', isHidden ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi');
+      if (useEl) {
+        useEl.setAttribute('href', isHidden ? '#i-eye-off' : '#i-eye');
+      }
+    });
+  });
 })();
 </script>
 

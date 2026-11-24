@@ -138,15 +138,20 @@ require_once 'includes/navbar.php';
             <span>Password</span>
             <span class="form-label__req" aria-label="Wajib diisi">*</span>
           </label>
-          <input
-            type="password" 
-            id="password" 
-            name="password"
-            class="form-control <?= isset($errors['password']) ? 'form-control--error' : '' ?>"
-            placeholder="Masukkan kata sandi akun"
-            autocomplete="current-password"
-            required
-          >
+          <div class="password-field">
+            <input
+              type="password" 
+              id="password" 
+              name="password"
+              class="form-control <?= isset($errors['password']) ? 'form-control--error' : '' ?>"
+              placeholder="Masukkan kata sandi akun"
+              autocomplete="current-password"
+              required
+            >
+            <button type="button" class="password-toggle" data-password-toggle="password" aria-label="Tampilkan kata sandi" aria-pressed="false">
+              <svg class="icon" aria-hidden="true"><use href="#i-eye"/></svg>
+            </button>
+          </div>
           <?php if (isset($errors['password'])): ?>
             <p class="form-error" role="alert"><?= htmlspecialchars($errors['password']) ?></p>
           <?php endif; ?>
