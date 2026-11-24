@@ -80,21 +80,21 @@ require_once 'includes/navbar.php';
 
     <!-- Ringkasan Statistik User -->
     <div class="stats-grid">
-      <div class="stat-card">
-        <span class="stat-card__num"><?= $stats['total'] ?></span>
-        <span class="stat-card__label">Total Laporan</span>
+      <div class="stat">
+        <span class="stat__val"><?= $stats['total'] ?></span>
+        <span class="stat__label">Total Laporan</span>
       </div>
-      <div class="stat-card">
-        <span class="stat-card__num text-warning"><?= $stats['active_lost'] ?></span>
-        <span class="stat-card__label">Barang Hilang</span>
+      <div class="stat">
+        <span class="stat__val text-warning"><?= $stats['active_lost'] ?></span>
+        <span class="stat__label">Barang Hilang</span>
       </div>
-      <div class="stat-card">
-        <span class="stat-card__num text-success"><?= $stats['active_found'] ?></span>
-        <span class="stat-card__label">Barang Ditemukan</span>
+      <div class="stat">
+        <span class="stat__val text-success"><?= $stats['active_found'] ?></span>
+        <span class="stat__label">Barang Ditemukan</span>
       </div>
-      <div class="stat-card">
-        <span class="stat-card__num text-muted"><?= $stats['done'] ?></span>
-        <span class="stat-card__label">Selesai</span>
+      <div class="stat">
+        <span class="stat__val text-muted"><?= $stats['done'] ?></span>
+        <span class="stat__label">Selesai</span>
       </div>
     </div>
 

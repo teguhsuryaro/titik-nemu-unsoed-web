@@ -70,21 +70,21 @@ require_once '../includes/navbar.php';
 
     <!-- Statistik -->
     <div class="stats-grid">
-      <div class="stat-card">
-        <span class="stat-card__num"><?= $stats['total_user'] ?></span>
-        <span class="stat-card__label">Total Pengguna</span>
+      <div class="stat">
+        <span class="stat__val"><?= $stats['total_user'] ?></span>
+        <span class="stat__label">Total Pengguna</span>
       </div>
-      <div class="stat-card">
-        <span class="stat-card__num text-warning"><?= $stats['hilang_aktif'] ?></span>
-        <span class="stat-card__label">Hilang (Aktif)</span>
+      <div class="stat">
+        <span class="stat__val text-warning"><?= $stats['hilang_aktif'] ?></span>
+        <span class="stat__label">Hilang (Aktif)</span>
       </div>
-      <div class="stat-card">
-        <span class="stat-card__num text-success"><?= $stats['ditemukan_aktif'] ?></span>
-        <span class="stat-card__label">Ditemukan (Aktif)</span>
+      <div class="stat">
+        <span class="stat__val text-success"><?= $stats['ditemukan_aktif'] ?></span>
+        <span class="stat__label">Ditemukan (Aktif)</span>
       </div>
-      <div class="stat-card">
-        <span class="stat-card__num text-muted"><?= $stats['dikembalikan'] ?></span>
-        <span class="stat-card__label">Selesai</span>
+      <div class="stat">
+        <span class="stat__val text-muted"><?= $stats['dikembalikan'] ?></span>
+        <span class="stat__label">Selesai</span>
       </div>
     </div>
 
