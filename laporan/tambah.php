@@ -201,8 +201,8 @@ require_once '../includes/navbar.php';
                 <?= ($old['type'] ?? '') === 'found' ? 'checked' : '' ?>
               >
               <label for="type_found" class="type-picker__card type-picker__card--found">
-                <svg class="icon icon--lg text-success" aria-hidden="true"><use href="#i-gift"/></svg>
-                <span class="type-picker__title">Barang Ditemukan</span>
+                <svg class="icon icon--lg text-info" aria-hidden="true"><use href="#i-gift"/></svg>
+                <span class="type-picker__title">Barang Temuan</span>
               </label>
             </div>
           </div>
@@ -359,9 +359,9 @@ document.addEventListener('DOMContentLoaded', function() {
       if (labelLokasi) labelLokasi.innerHTML = '<span>Lokasi Kehilangan Detail</span>';
       if (labelTanggal) labelTanggal.innerHTML = '<span>Tanggal Kehilangan</span><span class="form-label__req">*</span>';
     } else if (radioFound && radioFound.checked) {
-      if (labelFakultas) labelFakultas.innerHTML = '<span>Fakultas (Ditemukan)</span><span class="form-label__req">*</span>';
+      if (labelFakultas) labelFakultas.innerHTML = '<span>Fakultas (Lokasi Temuan)</span><span class="form-label__req">*</span>';
       if (labelLokasi) labelLokasi.innerHTML = '<span>Lokasi Penemuan Detail</span>';
-      if (labelTanggal) labelTanggal.innerHTML = '<span>Tanggal Ditemukan</span><span class="form-label__req">*</span>';
+      if (labelTanggal) labelTanggal.innerHTML = '<span>Tanggal Penemuan</span><span class="form-label__req">*</span>';
     }
   }
 

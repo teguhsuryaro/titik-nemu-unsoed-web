@@ -89,8 +89,8 @@ require_once 'includes/navbar.php';
         <span class="stat__label">Barang Hilang</span>
       </div>
       <div class="stat">
-        <span class="stat__val text-success"><?= $stats['active_found'] ?></span>
-        <span class="stat__label">Barang Ditemukan</span>
+        <span class="stat__val text-info"><?= $stats['active_found'] ?></span>
+        <span class="stat__label">Barang Temuan</span>
       </div>
       <div class="stat">
         <span class="stat__val text-muted"><?= $stats['done'] ?></span>
@@ -137,7 +137,7 @@ require_once 'includes/navbar.php';
                   <?php else: ?>
                     <span class="badge badge--found">
                       <svg class="icon icon--sm" aria-hidden="true"><use href="#i-gift"/></svg>
-                      <span>Ditemukan</span>
+                      <span>Temuan</span>
                     </span>
                   <?php endif; ?>
                 </td>

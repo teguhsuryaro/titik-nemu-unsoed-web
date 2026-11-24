@@ -108,7 +108,7 @@ require_once '../includes/navbar.php';
         <select name="type" class="form-select" onchange="this.form.submit()">
           <option value="all">Semua Jenis</option>
           <option value="lost" <?= $type === 'lost' ? 'selected' : '' ?>>Barang Hilang</option>
-          <option value="found" <?= $type === 'found' ? 'selected' : '' ?>>Barang Ditemukan</option>
+          <option value="found" <?= $type === 'found' ? 'selected' : '' ?>>Barang Temuan</option>
         </select>
       </div>
 
@@ -169,7 +169,7 @@ require_once '../includes/navbar.php';
                   <?php if ($item['type'] === 'lost'): ?>
                     <span class="badge badge--lost">Hilang</span>
                   <?php else: ?>
-                    <span class="badge badge--found">Ditemukan</span>
+                    <span class="badge badge--found">Temuan</span>
                   <?php endif; ?>
                 </td>
                 <td data-label="Status">

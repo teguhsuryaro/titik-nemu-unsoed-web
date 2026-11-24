@@ -145,7 +145,7 @@ $iconId = $catIcons[$item['kategori'] ?? ''] ?? 'i-box';
             <?php else: ?>
               <span class="badge badge--found">
                 <svg class="icon icon--sm" aria-hidden="true"><use href="#i-gift"/></svg>
-                <span>Barang Ditemukan</span>
+                <span>Barang Temuan</span>
               </span>
             <?php endif; ?>
           </div>

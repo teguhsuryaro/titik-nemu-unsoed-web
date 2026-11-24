@@ -79,8 +79,8 @@ require_once '../includes/navbar.php';
         <span class="stat__label">Hilang (Aktif)</span>
       </div>
       <div class="stat">
-        <span class="stat__val text-success"><?= $stats['ditemukan_aktif'] ?></span>
-        <span class="stat__label">Ditemukan (Aktif)</span>
+        <span class="stat__val text-info"><?= $stats['ditemukan_aktif'] ?></span>
+        <span class="stat__label">Temuan (Aktif)</span>
       </div>
       <div class="stat">
         <span class="stat__val text-muted"><?= $stats['dikembalikan'] ?></span>
@@ -124,7 +124,7 @@ require_once '../includes/navbar.php';
                     <?php if ($item['type'] === 'lost'): ?>
                       <span class="badge badge--lost">Hilang</span>
                     <?php else: ?>
-                      <span class="badge badge--found">Ditemukan</span>
+                      <span class="badge badge--found">Temuan</span>
                     <?php endif; ?>
                   </td>
                   <td data-label="Pelapor">

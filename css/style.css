@@ -65,6 +65,8 @@ button {
   --brand-green: #237A43; /* WCAG AA accessible text on white (4.8:1) */
   --brand-green-soft: #DDF5E3;
   --brand-green-hover: #c7eed0;
+  --brand-blue: #1D5BD6; /* WCAG AA accessible text on white (5.8:1) */
+  --brand-blue-soft: #E6F0FF;
   --info-soft: #EBF3FE;
   --ink: #172033;
   --muted: #647084;
@@ -397,13 +399,14 @@ small {
 }
 
 .cta--found {
-  background-color: var(--brand-green);
+  background-color: var(--brand-blue);
   color: var(--surface);
 }
 
 .cta--found:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+  filter: brightness(0.94);
 }
 
 /* --------------------------------------------------------------------------
@@ -427,8 +430,8 @@ small {
 }
 
 .badge--found {
-  background-color: var(--brand-green-soft);
-  color: var(--brand-green);
+  background-color: var(--brand-blue-soft);
+  color: var(--brand-blue);
 }
 
 .badge--done {
@@ -1625,8 +1628,8 @@ small {
 }
 
 .type-picker__radio:checked + .type-picker__card--found {
-  border-color: var(--brand-green);
-  background-color: var(--brand-green-soft);
+  border-color: var(--brand-blue);
+  background-color: var(--brand-blue-soft);
 }
 
 .type-picker__radio:focus-visible + .type-picker__card {
@@ -1955,6 +1958,8 @@ small {
 .text-muted { color: var(--muted); }
 .text-danger { color: var(--danger); }
 .text-success { color: var(--brand-green); }
+.text-info { color: var(--brand-blue); }
+.text-warning { color: var(--brand-yellow-dark); }
 .text-ink { color: var(--ink); }
 .font-semibold { font-weight: 600; }
 .font-bold { font-weight: 700; }

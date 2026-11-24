@@ -265,7 +265,7 @@ require_once 'includes/navbar.php';
            data-filter-tab="found"
            role="tab"
            aria-selected="<?= $type === 'found' ? 'true' : 'false' ?>">
-          <span>Ditemukan</span>
+          <span>Temuan</span>
           <span class="segmented__count"><?= $counts['found'] ?></span>
         </a>
       </div>
@@ -324,7 +324,7 @@ require_once 'includes/navbar.php';
                   <?php else: ?>
                     <span class="badge badge--found">
                       <svg class="icon icon--sm" aria-hidden="true"><use href="#i-gift"/></svg>
-                      <span>Ditemukan</span>
+                      <span>Temuan</span>
                     </span>
                   <?php endif; ?>
                 </div>
