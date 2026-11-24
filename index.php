@@ -1,13 +1,14 @@
 <?php
 /**
- * index.php — Halaman Beranda & Pencarian Barang (Desain Hero Banner Sesuai Referensi)
+ * index.php — Halaman Beranda & Pencarian Barang
+ * Refactored: Pure PHP Native, Responsive, Accessible, No Inline Styles
  */
 
 session_start();
 require_once 'config/database.php';
 
 $basePath   = '';
-$pageTitle  = 'Beranda — TitikNemu Unsoed';
+$pageTitle  = 'TitikNemu Unsoed — Cari. Temukan. Kembalikan.';
 $isLoggedIn = isset($_SESSION['user_id']);
 $userName   = $isLoggedIn ? $_SESSION['nama'] : '';
 
@@ -117,264 +118,367 @@ $stmt->close();
 
 $isFiltering = ($q !== '' || $fak_id > 0);
 
+// Ikon placeholder kategori
+$catIcons = [
+    'Kunci'              => 'i-key',
+    'Dompet/Tas'         => 'i-wallet',
+    'Elektronik'         => 'i-phone',
+    'Dokumen'            => 'i-file',
+    'Pakaian/Aksesoris'  => 'i-glasses',
+    'Alat Tulis'         => 'i-pencil',
+    'Lainnya'            => 'i-box'
+];
+
 require_once 'includes/header.php';
 require_once 'includes/navbar.php';
 ?>
 
-<!-- 1. Hero Banner Section (Sesuai Desain Referensi) -->
-<section class="hero-banner-section">
-  <div class="container">
+<!-- 1. Hero Section ("Peta Kampus") -->
+<section class="hero">
+  <div class="container hero__container">
     
-    <div class="hero-banner">
-      <div class="hero-banner__badge">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        TitikNemu Unsoed &bull; Cari. Temukan. Kembalikan.
+    <div class="hero__content">
+      <div class="hero__badge">
+        <svg class="icon icon--sm" aria-hidden="true"><use href="#i-pin"/></svg>
+        <span>TitikNemu Unsoed &bull; Cari. Temukan. Kembalikan.</span>
       </div>
 
       <?php if ($isLoggedIn): ?>
-        <h1 class="hero-banner__title">Halo, <?= htmlspecialchars($firstName) ?> 👋 Mau cari apa hari ini?</h1>
+        <h1 class="hero__title">Halo, <?= htmlspecialchars($firstName) ?>! 👋<br>Mau cari atau lapor apa hari ini?</h1>
       <?php else: ?>
-        <h1 class="hero-banner__title">Cari, Temukan, dan Kembalikan Barang di Kampus</h1>
+        <h1 class="hero__title">Cari, Temukan, dan Kembalikan Barang di Kampus</h1>
       <?php endif; ?>
 
-      <p class="hero-banner__sub">
+      <p class="hero__sub">
         Platform terpusat civitas Universitas Jenderal Soedirman untuk mencari dan mengembalikan barang yang tercecer di lingkungan kampus.
       </p>
-    </div>
 
-    <!-- 2. Floating Search Card (Menumpuk di Bawah Banner) -->
-    <div class="floating-search-card">
-      
-      <!-- Tab Filter Jenis Barang -->
-      <?php
-        $tabParams = [];
-        if ($q !== '') $tabParams['q'] = $q;
-        if ($fak_id > 0) $tabParams['fakultas_id'] = $fak_id;
-      ?>
-      <div class="floating-tabs">
-        <a href="index.php?<?= http_build_query(array_merge($tabParams, ['type' => 'all'])) ?>" 
-           class="floating-tab <?= $type === 'all' ? 'floating-tab--active' : '' ?>">
-          Semua Laporan
-          <span class="floating-tab__count"><?= $counts['all'] ?></span>
+      <div class="hero__cta-group">
+        <a href="laporan/tambah.php?type=lost" class="cta--lost">
+          <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+          <span>Lapor Kehilangan</span>
         </a>
-
-        <a href="index.php?<?= http_build_query(array_merge($tabParams, ['type' => 'lost'])) ?>" 
-           class="floating-tab <?= $type === 'lost' ? 'floating-tab--active' : '' ?>">
-          Barang Hilang
-          <span class="floating-tab__count"><?= $counts['lost'] ?></span>
-        </a>
-
-        <a href="index.php?<?= http_build_query(array_merge($tabParams, ['type' => 'found'])) ?>" 
-           class="floating-tab <?= $type === 'found' ? 'floating-tab--active' : '' ?>">
-          Barang Ditemukan
-          <span class="floating-tab__count"><?= $counts['found'] ?></span>
+        <a href="laporan/tambah.php?type=found" class="cta--found">
+          <svg class="icon" aria-hidden="true"><use href="#i-gift"/></svg>
+          <span>Lapor Temuan</span>
         </a>
       </div>
+    </div>
 
-      <!-- Form Pencarian -->
-      <form action="index.php" method="GET" class="floating-search-form">
-        <?php if ($type !== 'all'): ?>
-          <input type="hidden" name="type" value="<?= htmlspecialchars($type) ?>">
+    <!-- Hero Illustration (Tas Kampus & Pin Melayang) -->
+    <div class="hero__illustration" aria-hidden="true">
+      <svg class="hero-art" viewBox="0 0 320 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="160" cy="225" rx="100" ry="14" fill="#E2E7EE"/>
+        <rect x="100" y="70" width="120" height="140" rx="28" fill="#172033"/>
+        <rect x="115" y="125" width="90" height="70" rx="14" fill="#243048"/>
+        <path d="M115 145h90" stroke="#FFD84D" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="160" cy="165" r="4" fill="#FFD84D"/>
+        <path d="M135 70V52a12 12 0 0 1 12-12h26a12 12 0 0 1 12 12v18" stroke="#172033" stroke-width="8" stroke-linecap="round"/>
+        <rect x="86" y="90" width="14" height="90" rx="7" fill="#647084"/>
+        <rect x="220" y="90" width="14" height="90" rx="7" fill="#647084"/>
+        <path d="M100 100h120" stroke="#243048" stroke-width="4"/>
+        <g class="hero-art__pin">
+          <ellipse cx="230" cy="80" rx="18" ry="6" fill="rgba(23, 32, 51, 0.15)"/>
+          <path d="M230 72c-13.25 0-24-10.75-24-24 0-18 24-42 24-42s24 24 24 42c0 13.25-10.75 24-24 24Z" fill="#FFD84D" stroke="#172033" stroke-width="3"/>
+          <circle cx="230" cy="48" r="8" fill="#172033"/>
+        </g>
+      </svg>
+    </div>
+
+  </div>
+</section>
+
+<!-- 2. Search & Filter Bar -->
+<div class="container search-wrapper">
+  <div class="search-box">
+    
+    <form action="index.php" method="GET" class="search-form" id="search-form">
+      <input type="hidden" name="type" id="search-type" value="<?= htmlspecialchars($type) ?>">
+
+      <!-- Input Kata Kunci -->
+      <div class="search-field">
+        <svg class="icon search-field__icon" aria-hidden="true"><use href="#i-search"/></svg>
+        <input 
+          type="text" 
+          name="q" 
+          id="search-query"
+          class="search-field__input" 
+          placeholder="Cari nama barang, misal: kunci, dompet, KTM..." 
+          value="<?= htmlspecialchars($q) ?>" 
+          aria-label="Cari nama barang">
+      </div>
+
+      <!-- Pilihan Fakultas -->
+      <div class="search-field">
+        <select name="fakultas_id" id="search-fakultas" class="search-select" aria-label="Filter Fakultas">
+          <option value="0">Semua Fakultas</option>
+          <?php foreach ($fakultasList as $fak): ?>
+            <option value="<?= $fak['id'] ?>" <?= $fak_id === (int)$fak['id'] ? 'selected' : '' ?>>
+              <?= htmlspecialchars($fak['nama_fakultas']) ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+
+      <!-- Tombol Submit -->
+      <button type="submit" class="btn btn--primary">
+        <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+        <span>Cari</span>
+      </button>
+    </form>
+
+    <!-- Segmented Tabs Filter Jenis -->
+    <?php
+      $tabParams = [];
+      if ($q !== '') $tabParams['q'] = $q;
+      if ($fak_id > 0) $tabParams['fakultas_id'] = $fak_id;
+    ?>
+    <div class="segmented" role="tablist" aria-label="Filter jenis laporan">
+      <a href="index.php?<?= http_build_query(array_merge($tabParams, ['type' => 'all'])) ?>" 
+         class="segmented__item <?= $type === 'all' ? 'segmented__item--active' : '' ?>"
+         data-filter-tab="all"
+         role="tab"
+         aria-selected="<?= $type === 'all' ? 'true' : 'false' ?>">
+        <span>Semua Laporan</span>
+        <span class="segmented__count"><?= $counts['all'] ?></span>
+      </a>
+
+      <a href="index.php?<?= http_build_query(array_merge($tabParams, ['type' => 'lost'])) ?>" 
+         class="segmented__item <?= $type === 'lost' ? 'segmented__item--active' : '' ?>"
+         data-filter-tab="lost"
+         role="tab"
+         aria-selected="<?= $type === 'lost' ? 'true' : 'false' ?>">
+        <span>Barang Hilang</span>
+        <span class="segmented__count"><?= $counts['lost'] ?></span>
+      </a>
+
+      <a href="index.php?<?= http_build_query(array_merge($tabParams, ['type' => 'found'])) ?>" 
+         class="segmented__item <?= $type === 'found' ? 'segmented__item--active' : '' ?>"
+         data-filter-tab="found"
+         role="tab"
+         aria-selected="<?= $type === 'found' ? 'true' : 'false' ?>">
+        <span>Barang Ditemukan</span>
+        <span class="segmented__count"><?= $counts['found'] ?></span>
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<!-- 3. Daftar Hasil Laporan -->
+<section class="section">
+  <div class="container">
+
+    <!-- Header Status Hasil -->
+    <div class="results-bar">
+      <div class="results-bar__count" id="results-count" aria-live="polite">
+        <?php if ($isFiltering): ?>
+          Ditemukan <strong><?= $totalData ?></strong> laporan &bull; 
+          <a href="index.php<?= $type !== 'all' ? '?type=' . urlencode($type) : '' ?>" class="text-danger font-semibold">Reset filter &times;</a>
+        <?php else: ?>
+          Menampilkan <strong><?= $totalData ?></strong> laporan terbaru
+        <?php endif; ?>
+      </div>
+    </div>
+
+    <!-- Grid Container Kartu Barang -->
+    <div id="items-container">
+      <?php if (empty($items)): ?>
+        <div class="empty-state">
+          <div class="empty-state__icon">
+            <svg class="icon icon--xl" aria-hidden="true"><use href="#i-search"/></svg>
+          </div>
+          <h2 class="empty-state__title">Belum ada laporan yang cocok</h2>
+          <p class="empty-state__desc">Coba ubah kata kunci pencarian atau pilih fakultas yang berbeda.</p>
+          <a href="index.php" class="btn btn--secondary btn--sm">Lihat Semua Laporan</a>
+        </div>
+      <?php else: ?>
+        <div class="item-grid">
+          <?php foreach ($items as $i => $item): ?>
+            <a href="detail.php?id=<?= $item['id'] ?>" class="item-card" style="--i:<?= $i ?>">
+              
+              <div class="item-card__media">
+                <?php if (!empty($item['foto']) && file_exists('uploads/' . $item['foto'])): ?>
+                  <img src="uploads/<?= htmlspecialchars($item['foto']) ?>" 
+                       alt="Foto <?= htmlspecialchars($item['nama_barang']) ?>" 
+                       class="item-card__img" 
+                       loading="lazy">
+                <?php else: ?>
+                  <?php $iconId = $catIcons[$item['kategori'] ?? ''] ?? 'i-box'; ?>
+                  <div class="item-card__placeholder">
+                    <svg class="icon icon--xl" aria-hidden="true"><use href="#<?= $iconId ?>"/></svg>
+                    <span class="text-xs text-muted"><?= htmlspecialchars($item['kategori'] ?? 'Barang') ?></span>
+                  </div>
+                <?php endif; ?>
+
+                <div class="item-card__badge">
+                  <?php if ($item['status'] === 'returned' || ($item['type'] === 'lost' && $item['status'] === 'found')): ?>
+                    <span class="badge badge--done">
+                      <svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>
+                      <span>Selesai</span>
+                    </span>
+                  <?php elseif ($item['type'] === 'lost'): ?>
+                    <span class="badge badge--lost">
+                      <svg class="icon icon--sm" aria-hidden="true"><use href="#i-search"/></svg>
+                      <span>Hilang</span>
+                    </span>
+                  <?php else: ?>
+                    <span class="badge badge--found">
+                      <svg class="icon icon--sm" aria-hidden="true"><use href="#i-gift"/></svg>
+                      <span>Ditemukan</span>
+                    </span>
+                  <?php endif; ?>
+                </div>
+              </div>
+
+              <div class="item-card__body">
+                <?php if (!empty($item['kategori'])): ?>
+                  <div class="item-card__category"><?= htmlspecialchars($item['kategori']) ?></div>
+                <?php endif; ?>
+
+                <h3 class="item-card__title"><?= htmlspecialchars($item['nama_barang']) ?></h3>
+
+                <div class="item-card__meta">
+                  <div class="item-card__meta-row">
+                    <svg class="icon icon--sm" aria-hidden="true"><use href="#i-school"/></svg>
+                    <span><?= htmlspecialchars($item['nama_fakultas']) ?></span>
+                  </div>
+                  <?php if (!empty($item['lokasi'])): ?>
+                    <div class="item-card__meta-row">
+                      <svg class="icon icon--sm" aria-hidden="true"><use href="#i-pin"/></svg>
+                      <span><?= htmlspecialchars($item['lokasi']) ?></span>
+                    </div>
+                  <?php endif; ?>
+                  <div class="item-card__meta-row">
+                    <svg class="icon icon--sm" aria-hidden="true"><use href="#i-calendar"/></svg>
+                    <span><?= date('d M Y', strtotime($item['tanggal'])) ?></span>
+                  </div>
+                </div>
+              </div>
+
+            </a>
+          <?php endforeach; ?>
+        </div>
+
+        <!-- Paginasi -->
+        <?php if ($totalPages > 1): ?>
+          <nav class="pagination" aria-label="Navigasi halaman laporan" id="pagination-container">
+            <?php if ($page > 1): ?>
+              <?php 
+                $prevParams = array_merge($_GET, ['page' => $page - 1]);
+                $prevUrl = 'index.php?' . http_build_query($prevParams); 
+              ?>
+              <a href="<?= $prevUrl ?>" class="pagination__link" aria-label="Halaman sebelumnya">
+                <svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>
+              </a>
+            <?php endif; ?>
+
+            <?php for ($p = 1; $p <= $totalPages; $p++): ?>
+              <?php if ($p === 1 || $p === $totalPages || ($p >= $page - 1 && $p <= $page + 1)): ?>
+                <?php 
+                  $pageParams = array_merge($_GET, ['page' => $p]);
+                  $pageUrl = 'index.php?' . http_build_query($pageParams); 
+                ?>
+                <a href="<?= $pageUrl ?>" 
+                   class="pagination__link <?= $p === $page ? 'pagination__link--active' : '' ?>"
+                   aria-current="<?= $p === $page ? 'page' : 'false' ?>">
+                  <?= $p ?>
+                </a>
+              <?php endif; ?>
+            <?php endfor; ?>
+
+            <?php if ($page < $totalPages): ?>
+              <?php 
+                $nextParams = array_merge($_GET, ['page' => $page + 1]);
+                $nextUrl = 'index.php?' . http_build_query($nextParams); 
+              ?>
+              <a href="<?= $nextUrl ?>" class="pagination__link" aria-label="Halaman selanjutnya">
+                <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+              </a>
+            <?php endif; ?>
+          </nav>
         <?php endif; ?>
 
-        <!-- Field Fakultas -->
-        <div class="floating-field floating-field--select">
-          <label class="floating-field__label">Lokasi Kampus</label>
-          <select name="fakultas_id" class="form-select" aria-label="Pilih Fakultas">
-            <option value="0">Semua Fakultas</option>
-            <?php foreach ($fakultasList as $fak): ?>
-              <option value="<?= $fak['id'] ?>" <?= $fak_id === (int)$fak['id'] ? 'selected' : '' ?>>
-                <?= htmlspecialchars($fak['nama_fakultas']) ?>
-              </option>
-            <?php endforeach; ?>
-          </select>
-        </div>
-
-        <!-- Field Input Nama Barang / Lokasi -->
-        <div class="floating-field floating-field--input">
-          <label class="floating-field__label">Kata Kunci Barang</label>
-          <input type="text" name="q" class="form-input" placeholder="Misal: Kunci motor, dompet, KTM, tumbler..." value="<?= htmlspecialchars($q) ?>" aria-label="Cari barang">
-        </div>
-
-        <!-- Tombol Submit -->
-        <button type="submit" class="btn btn--primary floating-search-btn">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          Cari
-        </button>
-      </form>
-
-      <!-- Footer Search Card: Status Pencarian & Tombol Buat Laporan -->
-      <div class="search-card-footer">
-        <div class="search-card-status" id="results-count">
-          <?php if ($isFiltering): ?>
-            Ditemukan <strong><?= $totalData ?></strong> laporan &bull; 
-            <a href="index.php<?= $type !== 'all' ? '?type=' . urlencode($type) : '' ?>" style="color: var(--danger); font-weight: 600;">Reset kata kunci &times;</a>
-          <?php else: ?>
-            Menampilkan <strong><?= $totalData ?></strong> laporan terbaru
-          <?php endif; ?>
-        </div>
-
-        <div class="search-card-actions">
-          <span style="font-size: var(--font-size-xs); color: var(--muted); font-weight: 500;">Ingin lapor?</span>
-          <a href="laporan/tambah.php?type=lost" class="btn-pill-lost">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            + Lapor Kehilangan
-          </a>
-          <a href="laporan/tambah.php?type=found" class="btn-pill-found">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line></svg>
-            + Lapor Temuan
-          </a>
-        </div>
-      </div>
-
+      <?php endif; ?>
     </div>
 
   </div>
 </section>
 
-<!-- 3. Daftar Kartu Barang -->
-<section class="section" style="padding-top: 3.5rem;">
-  <div class="container" id="items-container">
-
-    <?php if (empty($items)): ?>
-      <div class="alert" style="background: var(--surface); border: 1px dashed var(--border); text-align: center; padding: 4rem 1.5rem; border-radius: var(--radius-lg);">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 1rem;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <h3 style="font-size: var(--font-size-lg); font-weight: 700; color: var(--ink); margin-bottom: .5rem;">Tidak Ada Laporan yang Ditemukan</h3>
-        <p class="text-muted" style="margin-bottom: 1.25rem;">Coba gunakan kata kunci lain atau pilih fakultas yang berbeda.</p>
-        <a href="index.php" class="btn btn--outline btn--sm">Lihat Semua Laporan</a>
-      </div>
-    <?php else: ?>
-      <div class="card-grid">
-        <?php foreach ($items as $item): ?>
-          <a href="detail.php?id=<?= $item['id'] ?>" class="card">
-
-            <!-- Foto dan Badge Wrapper -->
-            <div class="card__img-wrapper">
-              <?php if (!empty($item['foto']) && file_exists('uploads/' . $item['foto'])): ?>
-                <img src="uploads/<?= htmlspecialchars($item['foto']) ?>" alt="Foto <?= htmlspecialchars($item['nama_barang']) ?>" class="card__img" loading="lazy">
-              <?php else: ?>
-                <div class="card__img-placeholder">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                </div>
-              <?php endif; ?>
-
-              <div class="card__badge">
-                <?php if ($item['status'] === 'returned' || ($item['type'] === 'lost' && $item['status'] === 'found')): ?>
-                  <span class="badge badge--returned">Selesai</span>
-                <?php elseif ($item['type'] === 'lost'): ?>
-                  <span class="badge badge--lost">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    Hilang
-                  </span>
-                <?php else: ?>
-                  <span class="badge badge--found">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line></svg>
-                    Ditemukan
-                  </span>
-                <?php endif; ?>
-              </div>
-            </div>
-
-            <!-- Isi Informasi Kartu -->
-            <div class="card__body">
-              <?php if (!empty($item['kategori'])): ?>
-                <div class="card__category"><?= htmlspecialchars($item['kategori']) ?></div>
-              <?php endif; ?>
-
-              <h3 class="card__title"><?= htmlspecialchars($item['nama_barang']) ?></h3>
-
-              <div class="card__location">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                <span>
-                  <?= htmlspecialchars($item['nama_fakultas']) ?>
-                  <?php if (!empty($item['lokasi'])): ?>
-                    &bull; <?= htmlspecialchars($item['lokasi']) ?>
-                  <?php endif; ?>
-                </span>
-              </div>
-
-              <div class="card__date">
-                <?= date('d M Y', strtotime($item['tanggal'])) ?>
-              </div>
-            </div>
-
-          </a>
-        <?php endforeach; ?>
-      </div>
-
-      <!-- Paginasi Bersih -->
-      <?php if ($totalPages > 1): ?>
-        <div class="pagination" id="pagination-container">
-          <?php if ($page > 1): ?>
-            <?php 
-              $prevParams = array_merge($_GET, ['page' => $page - 1]);
-              $prevUrl = 'index.php?' . http_build_query($prevParams); 
-            ?>
-            <a href="<?= $prevUrl ?>" class="btn btn--outline">&larr; Sebelumnya</a>
-          <?php endif; ?>
-
-          <span class="pagination__info">Halaman <?= $page ?> dari <?= $totalPages ?></span>
-
-          <?php if ($page < $totalPages): ?>
-            <?php 
-              $nextParams = array_merge($_GET, ['page' => $page + 1]);
-              $nextUrl = 'index.php?' . http_build_query($nextParams); 
-            ?>
-            <a href="<?= $nextUrl ?>" class="btn btn--outline">Selanjutnya &rarr;</a>
-          <?php endif; ?>
-        </div>
-      <?php endif; ?>
-
-    <?php endif; ?>
-
-  </div>
-</section>
-
-<!-- Vanilla JS: AJAX Filter Tanpa Reload Halaman Penuh -->
+<!-- Vanilla JS: AJAX Filter & Tab Switcher (AbortController, sync form, no auto-scroll) -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  var tabs = document.querySelectorAll('.floating-tab');
+  'use strict';
+
+  var tabs = document.querySelectorAll('.segmented__item');
   var itemsContainer = document.getElementById('items-container');
   var resultsCount = document.getElementById('results-count');
+  var hiddenTypeInput = document.getElementById('search-type');
+  var currentAbortController = null;
 
-  if (!tabs.length || !itemsContainer) return;
+  function loadUrl(url, pushHistory) {
+    if (currentAbortController) {
+      currentAbortController.abort();
+    }
+    currentAbortController = new AbortController();
+
+    if (itemsContainer) {
+      itemsContainer.style.opacity = '0.5';
+    }
+
+    fetch(url, { signal: currentAbortController.signal })
+      .then(function (res) { return res.text(); })
+      .then(function (html) {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(html, 'text/html');
+
+        var newItems = doc.getElementById('items-container');
+        var newCount = doc.getElementById('results-count');
+
+        if (newItems && itemsContainer) {
+          itemsContainer.innerHTML = newItems.innerHTML;
+          itemsContainer.style.opacity = '1';
+        }
+        if (newCount && resultsCount) {
+          resultsCount.innerHTML = newCount.innerHTML;
+        }
+
+        if (pushHistory && window.history && window.history.pushState) {
+          window.history.pushState(null, '', url);
+        }
+      })
+      .catch(function (err) {
+        if (err.name === 'AbortError') return;
+        window.location.href = url;
+      });
+  }
 
   tabs.forEach(function (tab) {
     tab.addEventListener('click', function (e) {
       e.preventDefault();
       var url = this.getAttribute('href');
+      var filterType = this.getAttribute('data-filter-tab') || 'all';
 
-      // Update class active tab seketika
-      tabs.forEach(function (t) { t.classList.remove('floating-tab--active'); });
-      this.classList.add('floating-tab--active');
+      // Update hidden input agar pencarian berikutnya mempertahankan filter jenis
+      if (hiddenTypeInput) {
+        hiddenTypeInput.value = filterType;
+      }
 
-      // Ambil konten via Fetch API
-      fetch(url)
-        .then(function (res) { return res.text(); })
-        .then(function (html) {
-          var parser = new DOMParser();
-          var doc = parser.parseFromString(html, 'text/html');
+      // Update active state visual pada tabs
+      tabs.forEach(function (t) {
+        t.classList.remove('segmented__item--active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      this.classList.add('segmented__item--active');
+      this.setAttribute('aria-selected', 'true');
 
-          var newItems = doc.getElementById('items-container');
-          var newCount = doc.getElementById('results-count');
-
-          if (newItems && itemsContainer) {
-            itemsContainer.innerHTML = newItems.innerHTML;
-          }
-          if (newCount && resultsCount) {
-            resultsCount.innerHTML = newCount.innerHTML;
-          }
-
-          // Sinkronkan URL browser tanpa reload
-          if (window.history && window.history.pushState) {
-            window.history.pushState(null, '', url);
-          }
-        })
-        .catch(function () {
-          // Fallback jika fetch terhambat
-          window.location.href = url;
-        });
+      loadUrl(url, true);
     });
+  });
+
+  // Dukung tombol Back / Forward browser
+  window.addEventListener('popstate', function () {
+    loadUrl(window.location.href, false);
   });
 });
 </script>
