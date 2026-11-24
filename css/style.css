@@ -1335,6 +1335,24 @@ small {
   padding-block: 1rem 2rem;
 }
 
+.form-wrapper {
+  max-width: 640px;
+  margin-inline: auto;
+  padding-block: 1rem 2rem;
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .form-row-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 .form-group {
   display: flex;
   flex-direction: column;
@@ -1479,6 +1497,15 @@ small {
 }
 
 /* File Upload Box */
+.thumb-preview {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
 .file-upload {
   position: relative;
   display: flex;

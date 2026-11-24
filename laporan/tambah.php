@@ -1,6 +1,7 @@
 <?php
 /**
  * laporan/tambah.php — Form Buat Laporan Baru
+ * Refactored: Accessible Type Picker, Semantic Panel, No Inline Styles
  */
 
 session_start();
@@ -143,91 +144,115 @@ require_once '../includes/navbar.php';
 ?>
 
 <section class="section">
-  <div class="container">
+  <div class="container form-wrapper">
     
-    <div style="max-width: 600px; margin: 0 auto;">
-      <div class="page-header">
-        <a href="../index.php" class="btn btn--outline btn--sm mb-2" style="display: inline-flex;">&larr; Kembali</a>
-        <h1 class="page-header__title">Buat Laporan</h1>
-        <p class="page-header__sub">Isi form di bawah untuk melaporkan barang yang hilang atau ditemukan.</p>
+    <div class="mb-3">
+      <a href="../index.php" class="btn btn--secondary btn--sm">
+        <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-left"/></svg>
+        <span>Kembali ke Beranda</span>
+      </a>
+    </div>
+
+    <div class="panel">
+      <div class="mb-4">
+        <h1 class="page-header__title">Buat Laporan Baru</h1>
+        <p class="page-header__sub">Isi detail barang yang hilang atau ditemukan di kampus.</p>
       </div>
 
       <?php if (!empty($errors['general'])): ?>
-        <div class="alert alert--error mb-2"><?= htmlspecialchars($errors['general']) ?></div>
+        <div class="alert alert--error" role="alert">
+          <svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>
+          <span><?= htmlspecialchars($errors['general']) ?></span>
+        </div>
       <?php endif; ?>
 
-      <form method="POST" action="tambah.php" enctype="multipart/form-data" class="card" style="padding: 1.5rem;">
+      <form method="POST" action="tambah.php" enctype="multipart/form-data" novalidate>
         
-        <!-- Jenis Laporan -->
-        <div class="form-group mb-3">
-          <label class="form-label" style="font-size: var(--font-size-lg); font-weight: 700; margin-bottom: 1rem;">
-            Pilih Jenis Laporan <span class="required">*</span>
-          </label>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            
-            <label class="type-selector" style="cursor: pointer;">
-              <input type="radio" name="type" value="lost" id="type_lost" style="display: none;" <?= $old['type'] === 'lost' ? 'checked' : '' ?>>
-              <div class="type-card" style="border: 2px solid var(--border); border-radius: var(--radius-md); padding: 1rem; text-align: center; transition: all 0.2s;">
-                <div style="color: var(--brand-yellow); margin-bottom: .5rem;">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                </div>
-                <div style="font-weight: 600; color: var(--ink);">Barang Hilang</div>
-              </div>
-            </label>
+        <!-- Pilihan Jenis Laporan (Accessible Radio Cards) -->
+        <div class="form-group">
+          <span class="form-label" id="label-jenis-laporan">
+            <span>Jenis Laporan</span>
+            <span class="form-label__req" aria-label="Wajib diisi">*</span>
+          </span>
 
-            <label class="type-selector" style="cursor: pointer;">
-              <input type="radio" name="type" value="found" id="type_found" style="display: none;" <?= $old['type'] === 'found' ? 'checked' : '' ?>>
-              <div class="type-card" style="border: 2px solid var(--border); border-radius: var(--radius-md); padding: 1rem; text-align: center; transition: all 0.2s;">
-                <div style="color: var(--brand-green); margin-bottom: .5rem;">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                </div>
-                <div style="font-weight: 600; color: var(--ink);">Barang Ditemukan</div>
-              </div>
-            </label>
+          <div class="type-picker" role="radiogroup" aria-labelledby="label-jenis-laporan">
+            <div>
+              <input 
+                type="radio" 
+                name="type" 
+                value="lost" 
+                id="type_lost" 
+                class="type-picker__radio"
+                <?= ($old['type'] ?? '') === 'lost' ? 'checked' : '' ?>
+              >
+              <label for="type_lost" class="type-picker__card type-picker__card--lost">
+                <svg class="icon icon--lg text-warning" aria-hidden="true"><use href="#i-search"/></svg>
+                <span class="type-picker__title">Barang Hilang</span>
+              </label>
+            </div>
 
+            <div>
+              <input 
+                type="radio" 
+                name="type" 
+                value="found" 
+                id="type_found" 
+                class="type-picker__radio"
+                <?= ($old['type'] ?? '') === 'found' ? 'checked' : '' ?>
+              >
+              <label for="type_found" class="type-picker__card type-picker__card--found">
+                <svg class="icon icon--lg text-success" aria-hidden="true"><use href="#i-gift"/></svg>
+                <span class="type-picker__title">Barang Ditemukan</span>
+              </label>
+            </div>
           </div>
         </div>
-
-        <hr style="border: none; border-top: 1px solid var(--border); margin: 2rem 0;">
 
         <!-- Nama Barang -->
         <div class="form-group">
           <label for="nama_barang" class="form-label">
-            Nama Barang <span class="required">*</span>
+            <span>Nama Barang</span>
+            <span class="form-label__req" aria-label="Wajib diisi">*</span>
           </label>
-          <input type="text" id="nama_barang" name="nama_barang" 
-            class="form-input <?= isset($errors['nama_barang']) ? 'form-input--error' : '' ?>"
+          <input 
+            type="text" 
+            id="nama_barang" 
+            name="nama_barang" 
+            class="form-control <?= isset($errors['nama_barang']) ? 'form-control--error' : '' ?>"
             value="<?= htmlspecialchars($old['nama_barang'] ?? '') ?>"
-            placeholder="Contoh: Kunci Motor Honda, Dompet Hitam"
-            required>
+            placeholder="Contoh: Kunci Motor Honda Vario, Dompet Cokelat"
+            required
+          >
           <?php if (isset($errors['nama_barang'])): ?>
-            <p class="form-error"><?= htmlspecialchars($errors['nama_barang']) ?></p>
+            <p class="form-error" role="alert"><?= htmlspecialchars($errors['nama_barang']) ?></p>
           <?php endif; ?>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
+        <div class="form-row-2">
           <!-- Kategori -->
-          <div class="form-group" style="margin-bottom: 0;">
+          <div class="form-group">
             <label for="kategori" class="form-label">
-              Kategori <span class="required">*</span>
+              <span>Kategori</span>
+              <span class="form-label__req" aria-label="Wajib diisi">*</span>
             </label>
-            <select id="kategori" name="kategori" class="form-select <?= isset($errors['kategori']) ? 'form-input--error' : '' ?>" required>
+            <select id="kategori" name="kategori" class="form-select <?= isset($errors['kategori']) ? 'form-select--error' : '' ?>" required>
               <option value="">Pilih Kategori</option>
               <?php foreach ($kategoriList as $kat): ?>
                 <option value="<?= $kat ?>" <?= ($old['kategori'] ?? '') === $kat ? 'selected' : '' ?>><?= $kat ?></option>
               <?php endforeach; ?>
             </select>
             <?php if (isset($errors['kategori'])): ?>
-              <p class="form-error"><?= htmlspecialchars($errors['kategori']) ?></p>
+              <p class="form-error" role="alert"><?= htmlspecialchars($errors['kategori']) ?></p>
             <?php endif; ?>
           </div>
 
           <!-- Fakultas -->
-          <div class="form-group" style="margin-bottom: 0;">
+          <div class="form-group">
             <label for="fakultas_id" class="form-label" id="label_fakultas">
-              Fakultas (Lokasi) <span class="required">*</span>
+              <span>Fakultas</span>
+              <span class="form-label__req" aria-label="Wajib diisi">*</span>
             </label>
-            <select id="fakultas_id" name="fakultas_id" class="form-select <?= isset($errors['fakultas_id']) ? 'form-input--error' : '' ?>" required>
+            <select id="fakultas_id" name="fakultas_id" class="form-select <?= isset($errors['fakultas_id']) ? 'form-select--error' : '' ?>" required>
               <option value="">Pilih Fakultas</option>
               <?php foreach ($fakultasList as $fak): ?>
                 <option value="<?= $fak['id'] ?>" <?= ((int)($old['fakultas_id'] ?? 0) === (int)$fak['id']) ? 'selected' : '' ?>>
@@ -236,94 +261,112 @@ require_once '../includes/navbar.php';
               <?php endforeach; ?>
             </select>
             <?php if (isset($errors['fakultas_id'])): ?>
-              <p class="form-error"><?= htmlspecialchars($errors['fakultas_id']) ?></p>
+              <p class="form-error" role="alert"><?= htmlspecialchars($errors['fakultas_id']) ?></p>
             <?php endif; ?>
           </div>
         </div>
 
-        <div class="form-group mt-2">
+        <!-- Lokasi Detail -->
+        <div class="form-group">
           <label for="lokasi" class="form-label" id="label_lokasi">
-            Lokasi Detail
+            <span>Lokasi Detail</span>
           </label>
-          <input type="text" id="lokasi" name="lokasi" 
-            class="form-input"
+          <input 
+            type="text" 
+            id="lokasi" 
+            name="lokasi" 
+            class="form-control"
             value="<?= htmlspecialchars($old['lokasi'] ?? '') ?>"
-            placeholder="Contoh: Parkiran gedung F1, Depan kantin">
+            placeholder="Contoh: Parkiran Gedung F, Gazebo depan perpus"
+          >
         </div>
 
+        <!-- Tanggal -->
         <div class="form-group">
           <label for="tanggal" class="form-label" id="label_tanggal">
-            Tanggal Kejadian <span class="required">*</span>
+            <span>Tanggal Kejadian</span>
+            <span class="form-label__req" aria-label="Wajib diisi">*</span>
           </label>
-          <input type="date" id="tanggal" name="tanggal" 
-            class="form-input <?= isset($errors['tanggal']) ? 'form-input--error' : '' ?>"
+          <input 
+            type="date" 
+            id="tanggal" 
+            name="tanggal" 
+            class="form-control <?= isset($errors['tanggal']) ? 'form-control--error' : '' ?>"
             value="<?= htmlspecialchars($old['tanggal'] ?? '') ?>"
             max="<?= date('Y-m-d') ?>"
-            required>
+            required
+          >
           <?php if (isset($errors['tanggal'])): ?>
-            <p class="form-error"><?= htmlspecialchars($errors['tanggal']) ?></p>
+            <p class="form-error" role="alert"><?= htmlspecialchars($errors['tanggal']) ?></p>
           <?php endif; ?>
         </div>
 
+        <!-- Deskripsi -->
         <div class="form-group">
-          <label for="deskripsi" class="form-label">Deskripsi Tambahan</label>
-          <textarea id="deskripsi" name="deskripsi" class="form-textarea" 
-            placeholder="Sebutkan ciri-ciri khusus barang..."><?= htmlspecialchars($old['deskripsi'] ?? '') ?></textarea>
+          <label for="deskripsi" class="form-label">
+            <span>Deskripsi &amp; Ciri Khusus</span>
+          </label>
+          <textarea 
+            id="deskripsi" 
+            name="deskripsi" 
+            rows="3"
+            class="form-textarea" 
+            placeholder="Sebutkan ciri-ciri khusus, gantungan kunci, warna, atau detail lainnya..."
+          ><?= htmlspecialchars($old['deskripsi'] ?? '') ?></textarea>
         </div>
 
+        <!-- Upload Foto -->
         <div class="form-group mb-4">
-          <label for="foto" class="form-label">Foto Barang (Opsional)</label>
-          <input type="file" id="foto" name="foto" class="form-input" accept="image/jpeg,image/png,image/jpg" style="padding: .5rem .75rem; line-height: 1.5;">
-          <p class="form-hint">Maksimal 2MB. Format: JPG, JPEG, PNG.</p>
+          <label for="foto" class="form-label">
+            <span>Foto Barang (Opsional)</span>
+          </label>
+          <input 
+            type="file" 
+            id="foto" 
+            name="foto" 
+            class="form-control" 
+            accept="image/jpeg,image/png,image/jpg"
+          >
+          <p class="form-hint">Maksimal 2MB. Format file yang diterima: JPG, JPEG, PNG.</p>
           <?php if (isset($errors['foto'])): ?>
-            <p class="form-error"><?= htmlspecialchars($errors['foto']) ?></p>
+            <p class="form-error" role="alert"><?= htmlspecialchars($errors['foto']) ?></p>
           <?php endif; ?>
         </div>
 
-        <button type="submit" class="btn btn--primary btn--block btn--lg">Kirim Laporan</button>
-      </form>
+        <button type="submit" class="btn btn--primary btn--block btn--lg">
+          <span>Kirim Laporan</span>
+          <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+        </button>
 
+      </form>
     </div>
+
   </div>
 </section>
 
-<!-- CSS Khusus Radio Button & Label Dinamis -->
-<style>
-  .type-selector input[type="radio"]:checked + .type-card {
-    border-color: var(--brand-yellow);
-    background-color: var(--brand-yellow-soft);
-  }
-  #type_found:checked + .type-card {
-    border-color: var(--brand-green);
-    background-color: var(--brand-green-soft);
-  }
-</style>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const radioLost = document.getElementById('type_lost');
-  const radioFound = document.getElementById('type_found');
-  
-  const labelFakultas = document.getElementById('label_fakultas');
-  const labelLokasi = document.getElementById('label_lokasi');
-  const labelTanggal = document.getElementById('label_tanggal');
-  
+  'use strict';
+  var radioLost = document.getElementById('type_lost');
+  var radioFound = document.getElementById('type_found');
+  var labelFakultas = document.getElementById('label_fakultas');
+  var labelLokasi = document.getElementById('label_lokasi');
+  var labelTanggal = document.getElementById('label_tanggal');
+
   function updateLabels() {
-    if (radioLost.checked) {
-      labelFakultas.innerHTML = 'Fakultas (Lokasi kehilangan) <span class="required">*</span>';
-      labelLokasi.textContent = 'Lokasi Kehilangan Detail';
-      labelTanggal.innerHTML = 'Tanggal Kehilangan <span class="required">*</span>';
-    } else if (radioFound.checked) {
-      labelFakultas.innerHTML = 'Fakultas (Lokasi ditemukan) <span class="required">*</span>';
-      labelLokasi.textContent = 'Lokasi Penemuan Detail';
-      labelTanggal.innerHTML = 'Tanggal Ditemukan <span class="required">*</span>';
+    if (radioLost && radioLost.checked) {
+      if (labelFakultas) labelFakultas.innerHTML = '<span>Fakultas (Kehilangan)</span><span class="form-label__req">*</span>';
+      if (labelLokasi) labelLokasi.innerHTML = '<span>Lokasi Kehilangan Detail</span>';
+      if (labelTanggal) labelTanggal.innerHTML = '<span>Tanggal Kehilangan</span><span class="form-label__req">*</span>';
+    } else if (radioFound && radioFound.checked) {
+      if (labelFakultas) labelFakultas.innerHTML = '<span>Fakultas (Ditemukan)</span><span class="form-label__req">*</span>';
+      if (labelLokasi) labelLokasi.innerHTML = '<span>Lokasi Penemuan Detail</span>';
+      if (labelTanggal) labelTanggal.innerHTML = '<span>Tanggal Ditemukan</span><span class="form-label__req">*</span>';
     }
   }
 
-  radioLost.addEventListener('change', updateLabels);
-  radioFound.addEventListener('change', updateLabels);
-  
-  // Set inisial
+  if (radioLost) radioLost.addEventListener('change', updateLabels);
+  if (radioFound) radioFound.addEventListener('change', updateLabels);
   updateLabels();
 });
 </script>

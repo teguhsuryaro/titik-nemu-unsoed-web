@@ -1,6 +1,7 @@
 <?php
 /**
  * laporan/edit.php — Edit Laporan
+ * Refactored: Pure Semantic HTML5, No Inline Styles, Sprite Icons
  */
 
 session_start();
@@ -142,88 +143,168 @@ require_once '../includes/navbar.php';
 ?>
 
 <section class="section">
-  <div class="container">
-    <div style="max-width: 600px; margin: 0 auto;">
-      
-      <div class="page-header">
-        <a href="../detail.php?id=<?= $id ?>" class="btn btn--outline btn--sm mb-2" style="display: inline-flex;">&larr; Batal</a>
+  <div class="container form-wrapper">
+    
+    <div class="mb-3">
+      <a href="../detail.php?id=<?= $id ?>" class="btn btn--secondary btn--sm">
+        <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-left"/></svg>
+        <span>Batal &amp; Kembali</span>
+      </a>
+    </div>
+
+    <div class="panel">
+      <div class="mb-4">
         <h1 class="page-header__title">Edit Laporan</h1>
-        <p class="page-header__sub">Perbarui informasi mengenai barang <?= $item['type'] === 'lost' ? 'hilang' : 'ditemukan' ?> Anda.</p>
+        <p class="page-header__sub">Perbarui informasi barang <?= $item['type'] === 'lost' ? 'hilang' : 'ditemukan' ?> Anda.</p>
       </div>
 
       <?php if (!empty($errors['general'])): ?>
-        <div class="alert alert--error mb-2"><?= htmlspecialchars($errors['general']) ?></div>
+        <div class="alert alert--error" role="alert">
+          <svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>
+          <span><?= htmlspecialchars($errors['general']) ?></span>
+        </div>
       <?php endif; ?>
 
-      <form method="POST" action="edit.php?id=<?= $id ?>" enctype="multipart/form-data" class="card" style="padding: 1.5rem;">
+      <form method="POST" action="edit.php?id=<?= $id ?>" enctype="multipart/form-data" novalidate>
         <input type="hidden" name="id" value="<?= $id ?>">
 
+        <!-- Nama Barang -->
         <div class="form-group">
-          <label for="nama_barang" class="form-label">Nama Barang <span class="required">*</span></label>
-          <input type="text" id="nama_barang" name="nama_barang" 
-            class="form-input <?= isset($errors['nama_barang']) ? 'form-input--error' : '' ?>"
-            value="<?= htmlspecialchars($old['nama_barang']) ?>" required>
-          <?php if (isset($errors['nama_barang'])): ?><p class="form-error"><?= htmlspecialchars($errors['nama_barang']) ?></p><?php endif; ?>
+          <label for="nama_barang" class="form-label">
+            <span>Nama Barang</span>
+            <span class="form-label__req" aria-label="Wajib diisi">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="nama_barang" 
+            name="nama_barang" 
+            class="form-control <?= isset($errors['nama_barang']) ? 'form-control--error' : '' ?>"
+            value="<?= htmlspecialchars($old['nama_barang']) ?>" 
+            required
+          >
+          <?php if (isset($errors['nama_barang'])): ?>
+            <p class="form-error" role="alert"><?= htmlspecialchars($errors['nama_barang']) ?></p>
+          <?php endif; ?>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
-          <div class="form-group" style="margin-bottom: 0;">
-            <label for="kategori" class="form-label">Kategori <span class="required">*</span></label>
-            <select id="kategori" name="kategori" class="form-select <?= isset($errors['kategori']) ? 'form-input--error' : '' ?>" required>
+        <div class="form-row-2">
+          <!-- Kategori -->
+          <div class="form-group">
+            <label for="kategori" class="form-label">
+              <span>Kategori</span>
+              <span class="form-label__req" aria-label="Wajib diisi">*</span>
+            </label>
+            <select id="kategori" name="kategori" class="form-select <?= isset($errors['kategori']) ? 'form-select--error' : '' ?>" required>
               <?php foreach ($kategoriList as $kat): ?>
                 <option value="<?= $kat ?>" <?= $old['kategori'] === $kat ? 'selected' : '' ?>><?= $kat ?></option>
               <?php endforeach; ?>
             </select>
-            <?php if (isset($errors['kategori'])): ?><p class="form-error"><?= htmlspecialchars($errors['kategori']) ?></p><?php endif; ?>
+            <?php if (isset($errors['kategori'])): ?>
+              <p class="form-error" role="alert"><?= htmlspecialchars($errors['kategori']) ?></p>
+            <?php endif; ?>
           </div>
 
-          <div class="form-group" style="margin-bottom: 0;">
-            <label for="fakultas_id" class="form-label">Fakultas (Lokasi) <span class="required">*</span></label>
-            <select id="fakultas_id" name="fakultas_id" class="form-select <?= isset($errors['fakultas_id']) ? 'form-input--error' : '' ?>" required>
+          <!-- Fakultas -->
+          <div class="form-group">
+            <label for="fakultas_id" class="form-label">
+              <span>Fakultas</span>
+              <span class="form-label__req" aria-label="Wajib diisi">*</span>
+            </label>
+            <select id="fakultas_id" name="fakultas_id" class="form-select <?= isset($errors['fakultas_id']) ? 'form-select--error' : '' ?>" required>
               <?php foreach ($fakultasList as $fak): ?>
                 <option value="<?= $fak['id'] ?>" <?= (int)$old['fakultas_id'] === (int)$fak['id'] ? 'selected' : '' ?>>
                   <?= htmlspecialchars($fak['nama_fakultas']) ?>
                 </option>
               <?php endforeach; ?>
             </select>
-            <?php if (isset($errors['fakultas_id'])): ?><p class="form-error"><?= htmlspecialchars($errors['fakultas_id']) ?></p><?php endif; ?>
+            <?php if (isset($errors['fakultas_id'])): ?>
+              <p class="form-error" role="alert"><?= htmlspecialchars($errors['fakultas_id']) ?></p>
+            <?php endif; ?>
           </div>
         </div>
 
-        <div class="form-group mt-2">
-          <label for="lokasi" class="form-label">Lokasi Detail</label>
-          <input type="text" id="lokasi" name="lokasi" class="form-input" value="<?= htmlspecialchars($old['lokasi']) ?>">
-        </div>
-
+        <!-- Lokasi Detail -->
         <div class="form-group">
-          <label for="tanggal" class="form-label">Tanggal Kejadian <span class="required">*</span></label>
-          <input type="date" id="tanggal" name="tanggal" 
-            class="form-input <?= isset($errors['tanggal']) ? 'form-input--error' : '' ?>"
-            value="<?= htmlspecialchars($old['tanggal']) ?>" max="<?= date('Y-m-d') ?>" required>
-          <?php if (isset($errors['tanggal'])): ?><p class="form-error"><?= htmlspecialchars($errors['tanggal']) ?></p><?php endif; ?>
+          <label for="lokasi" class="form-label">
+            <span>Lokasi Detail</span>
+          </label>
+          <input 
+            type="text" 
+            id="lokasi" 
+            name="lokasi" 
+            class="form-control" 
+            value="<?= htmlspecialchars($old['lokasi']) ?>"
+          >
         </div>
 
+        <!-- Tanggal Kejadian -->
         <div class="form-group">
-          <label for="deskripsi" class="form-label">Deskripsi Tambahan</label>
-          <textarea id="deskripsi" name="deskripsi" class="form-textarea"><?= htmlspecialchars($old['deskripsi']) ?></textarea>
+          <label for="tanggal" class="form-label">
+            <span>Tanggal Kejadian</span>
+            <span class="form-label__req" aria-label="Wajib diisi">*</span>
+          </label>
+          <input 
+            type="date" 
+            id="tanggal" 
+            name="tanggal" 
+            class="form-control <?= isset($errors['tanggal']) ? 'form-control--error' : '' ?>"
+            value="<?= htmlspecialchars($old['tanggal']) ?>" 
+            max="<?= date('Y-m-d') ?>" 
+            required
+          >
+          <?php if (isset($errors['tanggal'])): ?>
+            <p class="form-error" role="alert"><?= htmlspecialchars($errors['tanggal']) ?></p>
+          <?php endif; ?>
         </div>
 
+        <!-- Deskripsi -->
+        <div class="form-group">
+          <label for="deskripsi" class="form-label">
+            <span>Deskripsi Tambahan</span>
+          </label>
+          <textarea 
+            id="deskripsi" 
+            name="deskripsi" 
+            rows="3"
+            class="form-textarea"
+          ><?= htmlspecialchars($old['deskripsi']) ?></textarea>
+        </div>
+
+        <!-- Foto Barang -->
         <div class="form-group mb-4">
-          <label for="foto" class="form-label">Ganti Foto Barang (Opsional)</label>
+          <label for="foto" class="form-label">
+            <span>Ganti Foto Barang (Opsional)</span>
+          </label>
+          
           <?php if (!empty($item['foto'])): ?>
-            <div style="margin-bottom: .5rem; display: flex; align-items: center; gap: 1rem;">
-              <img src="../uploads/<?= htmlspecialchars($item['foto']) ?>" style="width: 64px; height: 64px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border);">
-              <span class="text-muted" style="font-size: var(--font-size-xs);">Foto saat ini. Upload file baru untuk mengganti.</span>
+            <div class="flex items-center gap-3 mb-2">
+              <img src="../uploads/<?= htmlspecialchars($item['foto']) ?>" 
+                   alt="Foto saat ini" 
+                   class="thumb-preview">
+              <span class="text-xs text-muted">Foto saat ini. Unggah file baru bila ingin menggantinya.</span>
             </div>
           <?php endif; ?>
-          <input type="file" id="foto" name="foto" class="form-input" accept="image/jpeg,image/png,image/jpg" style="padding: .5rem .75rem; line-height: 1.5;">
-          <p class="form-hint">Maksimal 2MB. Format: JPG, JPEG, PNG.</p>
-          <?php if (isset($errors['foto'])): ?><p class="form-error"><?= htmlspecialchars($errors['foto']) ?></p><?php endif; ?>
+
+          <input 
+            type="file" 
+            id="foto" 
+            name="foto" 
+            class="form-control" 
+            accept="image/jpeg,image/png,image/jpg"
+          >
+          <p class="form-hint">Maksimal 2MB. Format file yang diterima: JPG, JPEG, PNG.</p>
+          <?php if (isset($errors['foto'])): ?>
+            <p class="form-error" role="alert"><?= htmlspecialchars($errors['foto']) ?></p>
+          <?php endif; ?>
         </div>
 
-        <button type="submit" class="btn btn--primary btn--block btn--lg">Simpan Perubahan</button>
+        <button type="submit" class="btn btn--primary btn--block btn--lg">
+          <span>Simpan Perubahan</span>
+          <svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>
+        </button>
       </form>
     </div>
+
   </div>
 </section>
 
