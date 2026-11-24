@@ -47,37 +47,10 @@ $isLoggedIn = isset($_SESSION['user_id']);
   </a>
 </nav>
 
-<!-- User dropdown toggle script -->
+<!-- Interaksi UI minimal -->
 <script>
 (function () {
   'use strict';
-
-  var dropdownBtn  = document.getElementById('userDropdownBtn');
-  var dropdownMenu = document.getElementById('userDropdownMenu');
-
-  if (dropdownBtn && dropdownMenu) {
-    dropdownBtn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      var expanded = dropdownBtn.getAttribute('aria-expanded') === 'true';
-      dropdownBtn.setAttribute('aria-expanded', String(!expanded));
-      dropdownMenu.classList.toggle('navbar__dropdown--open');
-    });
-
-    document.addEventListener('click', function (e) {
-      if (!dropdownBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
-        dropdownBtn.setAttribute('aria-expanded', 'false');
-        dropdownMenu.classList.remove('navbar__dropdown--open');
-      }
-    });
-
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && dropdownMenu.classList.contains('navbar__dropdown--open')) {
-        dropdownBtn.setAttribute('aria-expanded', 'false');
-        dropdownMenu.classList.remove('navbar__dropdown--open');
-        dropdownBtn.focus();
-      }
-    });
-  }
 
   /* ── Password visibility toggle ── */
   var passwordToggles = document.querySelectorAll('[data-password-toggle]');

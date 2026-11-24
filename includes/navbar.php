@@ -41,13 +41,27 @@ $isSubAdmin  = strpos($_SERVER['PHP_SELF'], '/admin/') !== false;
             </a>
           </li>
 
-          <?php if ($isLoggedIn && $isAdmin): ?>
+          <?php if ($isLoggedIn): ?>
+          <li>
+            <a href="<?= $basePath ?>dashboard.php"
+               class="navbar__link <?= ($currentPage === 'dashboard' && !$isSubAdmin) ? 'navbar__link--active' : '' ?>">
+              Laporan Saya
+            </a>
+          </li>
+          <li>
+            <a href="<?= $basePath ?>profile.php"
+               class="navbar__link <?= ($currentPage === 'profile' && !$isSubAdmin) ? 'navbar__link--active' : '' ?>">
+              Profil
+            </a>
+          </li>
+          <?php if ($isAdmin): ?>
           <li>
             <a href="<?= $basePath ?>admin/dashboard.php"
                class="navbar__link <?= $isSubAdmin ? 'navbar__link--active' : '' ?>">
               Admin
             </a>
           </li>
+          <?php endif; ?>
           <?php endif; ?>
         </ul>
       </nav>
@@ -56,45 +70,12 @@ $isSubAdmin  = strpos($_SERVER['PHP_SELF'], '/admin/') !== false;
     <!-- Sisi kanan: User / Auth -->
     <div class="navbar__auth">
       <?php if ($isLoggedIn): ?>
-        <!-- User dropdown -->
-        <div class="navbar__user" id="userDropdown">
-          <button
-            class="navbar__user-btn"
-            id="userDropdownBtn"
-            aria-expanded="false"
-            aria-haspopup="true"
-            aria-controls="userDropdownMenu"
-            aria-label="Menu akun: <?= htmlspecialchars($userName) ?>"
-          >
-            <span class="navbar__avatar" aria-hidden="true">
-              <?= strtoupper(mb_substr($userName, 0, 1)) ?>
-            </span>
-            <span class="navbar__user-name"><?= htmlspecialchars($userName) ?></span>
-            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-chevron-down"/></svg>
-          </button>
-
-          <ul class="navbar__dropdown" id="userDropdownMenu" role="menu">
-            <li role="none">
-              <a href="<?= $basePath ?>dashboard.php" class="navbar__dropdown-item" role="menuitem">
-                <svg class="icon" aria-hidden="true"><use href="#i-list"/></svg>
-                <span>Laporan Saya</span>
-              </a>
-            </li>
-            <li role="none">
-              <a href="<?= $basePath ?>profile.php" class="navbar__dropdown-item" role="menuitem">
-                <svg class="icon" aria-hidden="true"><use href="#i-user"/></svg>
-                <span>Profil</span>
-              </a>
-            </li>
-            <li role="none" class="navbar__dropdown-divider"></li>
-            <li role="none">
-              <a href="<?= $basePath ?>logout.php" class="navbar__dropdown-item navbar__dropdown-item--danger" role="menuitem">
-                <svg class="icon" aria-hidden="true"><use href="#i-log-out"/></svg>
-                <span>Keluar</span>
-              </a>
-            </li>
-          </ul>
-        </div>
+        <a href="<?= $basePath ?>profile.php"
+           class="navbar__avatar-link"
+           aria-label="Profil <?= htmlspecialchars($userName) ?>"
+           title="<?= htmlspecialchars($userName) ?>">
+          <?= strtoupper(mb_substr($userName, 0, 1)) ?>
+        </a>
       <?php else: ?>
         <a href="<?= $basePath ?>login.php" class="btn btn--secondary btn--sm">Masuk</a>
         <a href="<?= $basePath ?>register.php" class="btn btn--primary btn--sm">Daftar</a>

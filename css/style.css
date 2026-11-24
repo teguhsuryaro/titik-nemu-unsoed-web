@@ -612,97 +612,28 @@ small {
   }
 }
 
-/* User dropdown */
-.navbar__user {
-  position: relative;
-}
-
-.navbar__user-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background-color: transparent;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-full);
-  padding: 0.25rem 0.75rem 0.25rem 0.25rem;
-  cursor: pointer;
-  transition: border-color var(--dur-fast);
-}
-
-.navbar__user-btn:hover {
-  border-color: var(--border-strong);
-  background-color: var(--surface-sunken);
-}
-
-.navbar__avatar {
-  width: 32px;
-  height: 32px;
+/* User Avatar Initial (Compact, No Dropdown) */
+.navbar__avatar-link {
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background-color: var(--brand-yellow);
   color: var(--ink);
-  font-weight: 700;
-  font-size: var(--text-xs);
-  display: flex;
+  font-weight: 800;
+  font-size: var(--text-sm);
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  text-decoration: none;
+  border: 2px solid var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--dur-fast), box-shadow var(--dur-fast);
+  flex-shrink: 0;
 }
 
-.navbar__user-name {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--ink);
-  max-width: 140px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.navbar__dropdown {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 8px);
-  min-width: 210px;
-  background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
-  padding: 0.5rem 0;
-  display: none;
-  z-index: 200;
-}
-
-.navbar__dropdown--open {
-  display: block;
-  animation: fadeInDown var(--dur-fast) var(--ease-standard);
-}
-
-.navbar__dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0.625rem 1rem;
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--ink);
-  transition: background var(--dur-fast);
-}
-
-.navbar__dropdown-item:hover {
-  background-color: var(--surface-sunken);
-}
-
-.navbar__dropdown-item--danger {
-  color: var(--danger);
-}
-
-.navbar__dropdown-item--danger:hover {
-  background-color: var(--danger-soft);
-}
-
-.navbar__dropdown-divider {
-  height: 1px;
-  background-color: var(--border);
-  margin: 0.4rem 0;
+.navbar__avatar-link:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-md);
 }
 
 /* --------------------------------------------------------------------------
